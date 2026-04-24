@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservación - Dentalclean</title>
+    <link rel="icon" href="img/Logo.png">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="clinic-bg"> <header>
+        <h1><img src="img/Logo.png">Dentalclean</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/informacion.html">Información</a></li>
+                <li><a href="/tratamientos.html">Tratamientos</a></li>
+                <li><a href="/reservacion.html" class="active">Reservación</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container main-content">
+        <div class="text-center mb-10">
+            <h2 style="text-align: center; margin-bottom: 0.5rem; font-size: 2.5rem; font-weight: 800;">Agenda tu cita</h2>
+            <p style="text-align: center; color: #4b5563; margin-bottom: 2rem;">Completa el formulario para reservar tu turno con el Dr. Kevin Da Costa.</p>
+        </div>
+        
+        <div class="glass-container">
+            <form id="formReserva" action="/reservar" method="POST" class="reserva-form">
+                
+                <div class="input-group grid-2">
+                    <div class="field">
+                        <label class="label-style">Nombres</label>
+                        <input type="text" id="nombres" name="nombres" placeholder="Nombres" required>
+                    </div>
+                    <div class="field">
+                        <label class="label-style">Apellidos</label>
+                        <input type="text" id="apellidos" name="apellidos" placeholder="Apellidos" required>
+                    </div>
+                </div>
+
+                <div class="input-group grid-2">
+                    <div class="field">
+                        <label class="label-style">Cédula</label>
+                        <input type="number" id="cedula" name="cedula" placeholder="Cédula de Identidad" required>
+                    </div>
+                    <div class="field">
+                        <label class="label-style">Teléfono</label>
+                        <input type="tel" id="telefono" name="telefono" placeholder="Número de teléfono" required>
+                    </div>
+                </div>
+                
+                <div class="date-group grid-2">
+                    <div class="field">
+                        <label for="fecha" class="label-style">Fecha (Lunes a Viernes):</label>
+                        <input type="date" id="fecha" name="fecha" required>
+                    </div>
+                    <div class="field">
+                        <label for="hora" class="label-style">Hora (6:00 AM - 6:00 PM):</label>
+                        <input type="time" id="hora" name="hora" required>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label-style">Tratamiento</label>
+                    <select id="tratamiento" name="tratamiento" required>
+                        <option value="" disabled selected>¿En qué tratamiento estás interesado?</option>
+                        <option value="Implantologia">Implantología Estratégica</option>
+                        <option value="Diseno">Diseño de Sonrisa</option>
+                        <option value="Ortodoncia">Ortodoncia</option>
+                        <option value="Integral">Odontología Integral</option>
+                        <option value="Aclaramiento">Aclaramiento Dental</option>
+                        <option value="Limpieza">Limpieza Dental</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="label-style">Consulta</label>
+                    <textarea id="consulta" name="consulta" rows="4" placeholder="Escríbenos tu consulta..." required></textarea>
+                </div>
+                
+                <button type="submit" class="btn-submit">Confirmar Reservación</button>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p><strong>Dr. Kevin Da Costa</strong></p>
+            <p>Ubicación: UNEFA Extensión Punto Fijo, Falcón.</p>
+            <p>tel. (0424) 654-8189 | <a href="https://wa.me/584246548189" target="_blank">Escríbenos al WhatsApp</a></p>
+        </div>
+    </footer>
+
+    <script src="/app.js"></script>
+</body>
+</html>
