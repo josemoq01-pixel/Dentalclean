@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>DB Manager - Dentalclean</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .db-container {
+            width: 90%;
+            margin: 20px auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .tab-btn.active {
+            background: #00d2ff;
+            box-shadow: 0 0 15px #00d2ff;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        th {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid #00d2ff;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        tr:hover { background: rgba(255, 255, 255, 0.05); }
+    </style>
+</head>
+<body class="clinic-bg">
+    <header>
+        <h1><img src="img/Logo.png"> Dentalclean DB Viewer</h1>
+        <nav>
+            <ul>
+                <li><a href="inicio.html">Inicio</a></li>
+                <li><a href="informacion.html">Información</a></li>
+                <li><a href="tratamientos.html">Tratamientos</a></li>
+                <li><a href="reservacion.html" class="active">Reservación</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="db-container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="cargarTabla('reservaciones', this)">Reservaciones</button>
+            <button class="tab-btn" onclick="cargarTabla('pacientes', this)">Pacientes</button>
+            <button class="tab-btn" onclick="cargarTabla('tratamientos', this)">Tratamientos</button>
+            <button class="tab-btn" onclick="cargarTabla('odontologos', this)">Odontólogos</button>
+            <button class="tab-btn" onclick="cargarTabla('pagos', this)">Pagos</button>
+        </div>
+
+        <div class="table-wrapper">
+            <table id="db-table">
+                <thead><tr id="table-head"></tr></thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function cargarTabla(nombreTabla, btn) {
+            // Estética de botones
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const response = await fetch(`/api/data/${nombreTabla}`);
+            const datos = await response.json();
+
+            const head = document.getElementById('table-head');
+            const body = document.getElementById('table-body');
+            
+            head.innerHTML = "";
+            body.innerHTML = "";
+
+            if (datos.length > 0) {
+                // Crear encabezados basados en las llaves del objeto (columnas de SQLite)
+                Object.keys(datos[0]).forEach(col => {
+                    head.innerHTML += `<th>${col.toUpperCase()}</th>`;
+                });
+
+                // Crear filas
+                datos.forEach(fila => {
+                    let tr = "<tr>";
+                    Object.values(fila).forEach(val => {
+                        tr += `<td>${val !== null ? val : ''}</td>`;
+                    });
+                    tr += "</tr>";
+                    body.innerHTML += tr;
+                });
+            } else {
+                body.innerHTML = "<tr><td colspan='5'>No hay datos en esta tabla.</td></tr>";
+            }
+        }
+        // Carga inicial
+        window.onload = () => cargarTabla('reservaciones', document.querySelector('.tab-btn'));
+    </script>
+</body>
+</html>

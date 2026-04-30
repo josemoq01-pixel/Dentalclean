@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión - Dentalclean</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="clinic-bg">
+    <div class="glass-container" style="max-width: 400px; margin: 10% auto; text-align: center;">
+        <img src="img/Logo.png" alt="Logo" style="width: 100px; margin-bottom: 20px;">
+        <h2>Acceso Restringido</h2>
+        <form id="loginForm">
+            <input type="text" id="login_usuario" placeholder="Usuario Asignado" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
+            
+            <div style="display: flex; margin-bottom: 20px;">
+                <input type="password" id="login_password" placeholder="Contraseña" required style="width: 85%; padding: 10px;">
+                <button type="button" id="togglePassword" style="width: 15%; cursor: pointer;">👁️</button>
+            </div>
+
+            <button type="submit" class="btn" style="width: 100%;">Iniciar Sesión</button>
+        </form>
+        <p style="margin-top: 15px;"><a href="registro.html" style="color: cyan;">Registrar nuevo personal</a></p>
+    </div>
+
+    <script>
+        // Lógica para mostrar/ocultar contraseña
+        const togglePassword = document.getElementById('togglePassword');
+        const password = document.getElementById('login_password');
+        
+        togglePassword.addEventListener('click', function () {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+        });
+
+        // Lógica para procesar el login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const usu = document.getElementById('login_usuario').value;
+            const pass = document.getElementById('login_password').value;
+
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ usuario: usu, password: pass })
+            });
+
+            const result = await response.json();
+
+            if(result.success) {
+                alert(`¡Bienvenido/a de nuevo, ${result.nombre}! Acceso concedido.`);
+                // Guardamos el pase de seguridad en el navegador
+                localStorage.setItem('accesoDentalclean', 'permitido');
+                window.location.href = 'inicio.html'; // Lo enviamos a la página principal
+            } else {
+                alert("❌ " + result.error);
+            }
+        });
+    </script>
+</body>
+</html>

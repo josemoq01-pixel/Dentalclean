@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Staff - Dentalclean</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="clinic-bg">
+    <div class="glass-container" style="max-width: 500px; margin: 2rem auto;">
+        <h2 style="text-align: center;">Registro de Personal</h2>
+        <form id="registroForm">
+            <input type="text" id="nombres" placeholder="Nombres" pattern="[A-Za-zÁ-É-Í-Ó-Úá-é-í-ó-úÑñ ]+" title="Solo letras permitidas" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
+            <input type="text" id="apellidos" placeholder="Apellidos" pattern="[A-Za-zÁ-É-Í-Ó-Úá-é-í-ó-úÑñ ]+" title="Solo letras permitidas" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
+            
+            <input type="text" id="cedula" placeholder="Nro de Cédula (Ej: 31.397.398)" pattern="\d{1,2}\.\d{3}\.\d{3}" title="Formato: xx.xxx.xxx" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
+            
+            <input type="text" id="telefono" placeholder="Teléfono (Ej: +58 0414-654-8189)" pattern="\+?[0-9]{1,3} ?[0-9]{4}-[0-9]{3}-[0-9]{4}" title="Ejemplo: +58 0414-654-8189" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
+            
+            <select id="cargo" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
+                <option value="" disabled selected>Seleccione su cargo...</option>
+                <option value="Director Médico/Gerente">Director Médico/Gerente</option>
+                <option value="Odontólogo General">Odontólogo General</option>
+                <option value="Especialistas">Especialistas</option>
+                <option value="Higienista Dental">Higienista Dental</option>
+                <option value="Auxiliar Dental / Asistente">Auxiliar Dental / Asistente</option>
+                <option value="Recepcionista / Asesor">Recepcionista / Asesor al Paciente</option>
+                <option value="Protésico Dental">Protésico Dental</option>
+            </select>
+
+            <select id="horario" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
+                <option value="" disabled selected>Seleccione horario...</option>
+                <option value="El primer turno de 6am hasta 2pm">Primer turno (6:00 AM - 2:00 PM)</option>
+                <option value="El Segundo turno de 10 am hasta las 6pm">Segundo turno (10:00 AM - 6:00 PM)</option>
+                <option value="turno completo de 6am hasta 6pm">Turno completo (6:00 AM - 6:00 PM)</option>
+            </select>
+
+            <input type="password" id="password" placeholder="Cree su contraseña de acceso" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
+
+            <input type="password" id="clave_seguridad" placeholder="Clave de Seguridad del Sistema" required style="width: 100%; margin-bottom: 20px; padding: 10px; border: 2px solid red;">
+
+            <button type="submit" class="btn" style="width: 100%; background: #00d2ff;">Registrar Staff</button>
+        </form>
+        <p style="text-align: center; margin-top: 15px;"><a href="login.html" style="color: white;">Ya tengo cuenta, iniciar sesión</a></p>
+    </div>
+
+    <script>
+        document.getElementById('registroForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const claveSeguridad = document.getElementById('clave_seguridad').value;
+            
+            // AUTODESTRUCCIÓN / CIERRE SI LA CLAVE ESTÁ MAL
+            if(claveSeguridad !== "Dentalclean2026") {
+                document.body.innerHTML = "<h1 style='color:red; text-align:center; font-size:50px; margin-top:20%;'>⚠️ ACCESO DE SEGURIDAD DENEGADO ⚠️</h1><p style='color:white; text-align:center;'>La página se ha bloqueado.</p>";
+                setTimeout(() => window.close(), 2000); // Intenta cerrar la pestaña
+                return;
+            }
+
+            const data = {
+                nombres: document.getElementById('nombres').value,
+                apellidos: document.getElementById('apellidos').value,
+                cedula: document.getElementById('cedula').value,
+                telefono: document.getElementById('telefono').value,
+                cargo: document.getElementById('cargo').value,
+                horario: document.getElementById('horario').value,
+                password: document.getElementById('password').value,
+                clave_seguridad: claveSeguridad
+            };
+
+            const response = await fetch('/api/registro', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if(result.success) {
+                alert(`✅ Registro Exitoso.\n\nTUS DATOS DE ACCESO:\nUsuario asignado: ${result.usuario}\n\nGuarda este usuario, lo necesitarás para iniciar sesión.`);
+                window.location.href = 'login.html';
+            } else {
+                alert("Error en el registro: " + result.error);
+            }
+        });
+    </script>
+</body>
+</html>
