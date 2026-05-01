@@ -50,7 +50,7 @@
                 alert(`¡Bienvenido/a de nuevo, ${result.nombre}! Acceso concedido.`);
                 // Guardamos el pase de seguridad en el navegador
                 localStorage.setItem('accesoDentalclean', 'permitido');
-                window.location.href = 'inicio.html'; // Lo enviamos a la página principal
+                window.location.href = 'BD.html'; // Lo enviamos a la página principal
             } else {
                 alert("❌ " + result.error);
             }

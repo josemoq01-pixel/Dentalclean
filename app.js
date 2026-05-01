@@ -1,5 +1,5 @@
-// app.js
 document.addEventListener('DOMContentLoaded', () => {
+    // --- LÓGICA DE VALIDACIÓN DE RESERVAS ---
     const formReserva = document.getElementById('formReserva');
 
     if (formReserva) {
@@ -13,10 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Validación de Fecha (Lunes a Viernes)
-            // Usamos el reemplazo de guiones por barras para asegurar compatibilidad de fechas
             const fechaSeleccionada = new Date(fechaInput.replace(/-/g, '\/')); 
-            const diaSemana = fechaSeleccionada.getDay(); // 0 = Domingo, 6 = Sábado
+            const diaSemana = fechaSeleccionada.getDay(); 
 
             if (diaSemana === 0 || diaSemana === 6) {
                 alert("Lo sentimos, solo trabajamos de Lunes a Viernes. Por favor selecciona otra fecha.");
@@ -24,22 +22,46 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Validación de Hora (6am a 6pm)
             const horaSeleccionada = parseInt(horaInput.split(':')[0], 10);
-            
             if (horaSeleccionada < 6 || horaSeleccionada >= 18) {
                 alert("Nuestro horario de atención es de 6:00 AM a 6:00 PM. Por favor ajusta la hora.");
                 event.preventDefault();
                 return;
             }
-
-            // Si pasa las validaciones
-            alert("Validación exitosa. ¡Cita agendada correctamente!");
         });
     }
-});
-app.post('/reservar', (req, res) => {
-    console.log("--- DATOS RECIBIDOS ---");
-    console.log(req.body); // Esto te mostrará en la terminal qué está llegando
-    // ... resto del código
+
+    // --- LÓGICA DE LOGIN Y REDIRECCIÓN A BD.HTML ---
+    const formLogin = document.getElementById('formLogin');
+
+    if (formLogin) {
+        formLogin.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Evita que la página se recargue
+
+            const usuario = document.getElementById('usuario').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const respuesta = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario, password })
+                });
+
+                const resultado = await respuesta.json();
+
+                if (resultado.success) {
+                alert("Login correcto, intentando entrar a BD.html");
+                window.location.replace("BD.html"); // .replace es a veces más efectivo que .href
+                }
+                
+                else {
+                    alert("Error: " + (resultado.error || "Usuario o contraseña incorrectos"));
+                }
+            } catch (error) {
+                console.error("Error en el login:", error);
+                alert("Hubo un problema al conectar con el servidor.");
+            }
+        });
+    }
 });

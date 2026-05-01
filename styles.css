@@ -1,4 +1,4 @@
-/* Importamos la fuente Inter (MÃ¡s moderna que Segoe UI) */
+/* Importamos la fuente Inter (MÃƒÂ¡s moderna que Segoe UI) */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
 
 * { 
@@ -66,7 +66,7 @@ nav a:hover {
     color: var(--cyan-bright); 
 }
 
-/* El Hero ahora es mÃ¡s elegante */
+/* El Hero ahora es mÃƒÂ¡s elegante */
 .hero { 
     background: linear-gradient(rgba(0, 95, 115, 0.6), rgba(10, 147, 150, 0.6)), 
     url(img/Fondo.png) center/cover; 
@@ -103,7 +103,7 @@ nav a:hover {
     margin-bottom: 0.75rem; 
 }
 
-/* Formulario Estilo AplicaciÃ³n Moderna */
+/* Formulario Estilo AplicaciÃƒÂ³n Moderna */
 form { 
     background: var(--glass-bg); 
     backdrop-filter: blur(20px);
@@ -171,7 +171,63 @@ footer a {
 }
 
 /* =========================================
-   NUEVAS REGLAS: DISEÑO RESPONSIVO
+   ESTILOS PARA EL EQUIPO MÉDICO (INICIO)
+   ========================================= */
+
+.equipo-medico {
+    padding: 0 5%;
+    margin-bottom: 4rem;
+}
+
+.titulo-seccion {
+    text-align: center;
+    color: var(--cyan-deep);
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 2.5rem;
+}
+
+.doctores-grid {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap; /* Permite que bajen si no caben en la pantalla */
+    justify-content: center;
+}
+
+.doctor-card {
+    flex: 1;
+    min-width: 280px;
+    max-width: 350px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Efecto de foto de perfil redonda */
+.doctor-img {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%; /* Hace que la imagen sea un círculo */
+    object-fit: cover; /* Evita que la foto se estire o deforme */
+    margin-bottom: 1.5rem;
+    border: 4px solid white;
+    box-shadow: 0 10px 20px rgba(10, 147, 150, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.doctor-card:hover .doctor-img {
+    transform: scale(1.05); /* La foto crece al pasar el mouse */
+}
+
+.doctor-card p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #4b5563;
+}
+
+/* =========================================
+   NUEVAS REGLAS: DISEÃ‘O RESPONSIVO
    ========================================= */
 
 /* 1. Ajustes para Tablets (Pantallas hasta 1024px) */
@@ -189,17 +245,17 @@ footer a {
     }
 }
 
-/* 2. Ajustes para Teléfonos (Pantallas hasta 768px) */
+/* 2. Ajustes para TelÃ©fonos (Pantallas hasta 768px) */
 @media (max-width: 768px) {
     header {
-        flex-direction: column; /* Apila el logo y el menú de navegación */
+        flex-direction: column; /* Apila el logo y el menÃº de navegaciÃ³n */
         gap: 1rem;
         text-align: center;
     }
 
     nav ul {
         gap: 1rem;
-        flex-wrap: wrap; /* Permite que los enlaces bajen a otra línea si no caben */
+        flex-wrap: wrap; /* Permite que los enlaces bajen a otra lÃ­nea si no caben */
         justify-content: center;
     }
 
@@ -210,7 +266,7 @@ footer a {
     }
 
     .hero h2 {
-        font-size: 1.8rem; /* Título principal más pequeño */
+        font-size: 1.8rem; /* TÃ­tulo principal mÃ¡s pequeÃ±o */
     }
 
     form {
@@ -219,13 +275,13 @@ footer a {
         gap: 1rem;
     }
 
-    /* Asegura que los inputs tengan 16px para evitar que los iPhone hagan zoom automático */
+    /* Asegura que los inputs tengan 16px para evitar que los iPhone hagan zoom automÃ¡tico */
     input, select, textarea, button {
         font-size: 16px; 
     }
 }
 
-/* 3. Ajustes para Teléfonos muy pequeños (Pantallas hasta 480px) */
+/* 3. Ajustes para TelÃ©fonos muy pequeÃ±os (Pantallas hasta 480px) */
 @media (max-width: 480px) {
     header h1 {
         font-size: 1.5rem;
@@ -237,5 +293,93 @@ footer a {
 
     .card {
         padding: 1.5rem;
+    }
+    
+    .titulo-seccion {
+        font-size: 1.8rem;
+    }
+}
+
+/* =========================================
+   ESTILOS ESPECÍFICOS: SERVICIOS Y PRECIOS
+   ========================================= */
+
+.body-servicios {
+    background: linear-gradient(rgba(240, 244, 248, 0.8), rgba(217, 226, 236, 0.8)), 
+                url('img/Fondo.png') center/cover fixed !important;
+}
+
+.contenedor-servicios {
+    padding: 4rem 5%;
+    animation: fadeIn 1s ease-in;
+}
+
+.titulo-animado {
+    text-align: center; 
+    color: var(--cyan-deep);
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.grid-servicios {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2.5rem;
+}
+
+.card-servicio {
+    position: relative;
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card-servicio:hover {
+    border-color: var(--cyan-bright);
+    transform: translateY(-15px) scale(1.02);
+}
+
+/* Etiqueta de precio flotante */
+.badge-precio {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: var(--cyan-bright);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 10px rgba(10, 147, 150, 0.3);
+}
+
+.card-servicio h3 {
+    margin-top: 1rem;
+    font-size: 1.4rem;
+    border-bottom: 2px solid var(--cyan-glass);
+    padding-bottom: 0.5rem;
+}
+
+.card-servicio p {
+    margin-top: 1rem;
+    line-height: 1.6;
+}
+
+/* Animación de entrada suave */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Ajuste responsivo para el grid */
+@media (max-width: 768px) {
+    .grid-servicios {
+        grid-template-columns: 1fr;
+    }
+    
+    .titulo-animado {
+        font-size: 1.8rem;
     }
 }
