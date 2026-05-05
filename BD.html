@@ -22,9 +22,9 @@
         }
         .tab-btn {
             padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.2);
             border: none;
-            color: white;
+            color: rgb(255, 255, 255);
             cursor: pointer;
             border-radius: 5px;
             transition: 0.3s;
@@ -71,10 +71,10 @@
     <div class="db-container">
         <div class="tabs">
             <button class="tab-btn active" onclick="cargarTabla('reservaciones', this)">Reservaciones</button>
-            <button class="tab-btn" onclick="cargarTabla('pacientes', this)">Pacientes</button>
+            <button class="tab-btn" onclick="cargarTabla('pacientes', this)">Pacientes Reservados</button>
             <button class="tab-btn" onclick="cargarTabla('tratamientos', this)">Tratamientos</button>
-            <button class="tab-btn" onclick="cargarTabla('odontologos', this)">Odontólogos</button>
-            <button class="tab-btn" onclick="cargarTabla('pagos', this)">Pagos</button>
+            <button class="tab-btn" onclick="cargarTabla('odontologos', this)">Personal de Trabajo</button>
+            <button class="tab-btn" onclick="cargarTabla('precios', this)">Precios</button>
         </div>
 
         <div class="table-wrapper">

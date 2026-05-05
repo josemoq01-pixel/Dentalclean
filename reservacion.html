@@ -7,7 +7,7 @@
     <link rel="icon" href="img/Logo.png">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="clinic-bg"> <header>
+<body class="body-servicios"> <header>
         <h1><img src="img/Logo.png">Dentalclean</h1>
         <nav>
             <ul>
@@ -22,7 +22,7 @@
     <main class="container main-content">
         <div class="text-center mb-10">
             <h2 style="text-align: center; margin-bottom: 0.5rem; font-size: 2.5rem; font-weight: 800;">Agenda tu cita</h2>
-            <p style="text-align: center; color: #4b5563; margin-bottom: 2rem;">Completa el formulario para reservar tu turno con el Dr. Kevin Da Costa.</p>
+            <p style="text-align: center; color: #4b5563; margin-bottom: 2rem;">Completa el formulario para reservar.</p>
         </div>
         
         <div class="glass-container">
@@ -31,11 +31,11 @@
                 <div class="input-group grid-2">
                     <div class="field">
                         <label class="label-style">Nombres</label>
-                        <input type="text" id="nombres" name="nombres" placeholder="Nombres" required>
+                        <input type="text" id="nombres" name="nombres" oninput="this.value = this.value.replace (/[^a-zA-ZáéíóúÁÉÍÓÚ\s]/g, '')" placeholder="Nombres" required>
                     </div>
                     <div class="field">
                         <label class="label-style">Apellidos</label>
-                        <input type="text" id="apellidos" name="apellidos"  placeholder="Apellidos" required>
+                        <input type="text" id="apellidos" name="apellidos" oninput="this.value = this.value.replace (/[^a-zA-ZáéíóúÁÉÍÓÚ\s]/g, '')"  placeholder="Apellidos" required>
                     </div>
                 </div>
 

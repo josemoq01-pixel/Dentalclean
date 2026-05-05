@@ -5,16 +5,16 @@
     <title>Registro de Staff - Dentalclean</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="clinic-bg">
+<body class="body-servicios">
     <div class="glass-container" style="max-width: 500px; margin: 2rem auto;">
         <h2 style="text-align: center;">Registro de Personal</h2>
         <form id="registroForm">
-            <input type="text" id="nombres" placeholder="Nombres" pattern="[A-Za-zÁ-É-Í-Ó-Úá-é-í-ó-úÑñ ]+" title="Solo letras permitidas" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
-            <input type="text" id="apellidos" placeholder="Apellidos" pattern="[A-Za-zÁ-É-Í-Ó-Úá-é-í-ó-úÑñ ]+" title="Solo letras permitidas" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
+            <input type="text" id="nombres" placeholder="Nombres" oninput="this.value = this.value.replace (/[^a-zA-ZáéíóúÁÉÍÓÚ\s]/g, '')" title="Solo letras permitidas" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
+            <input type="text" id="apellidos" placeholder="Apellidos" oninput="this.value = this.value.replace (/[^a-zA-ZáéíóúÁÉÍÓÚ\s]/g, '')" title="Solo letras permitidas" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
             
-            <input type="text" id="cedula" placeholder="Nro de Cédula (Ej: 31.397.398)" pattern="\d{1,2}\.\d{3}\.\d{3}" title="Formato: xx.xxx.xxx" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
+            <input type="number" id="cedula" placeholder="Nro de Cédula (Ej: 31397398)" pattern="\d{1,2}\.\d{3}\.\d{3}" title="Formato: xx.xxx.xxx" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
             
-            <input type="text" id="telefono" placeholder="Teléfono (Ej: +58 0414-654-8189)" pattern="\+?[0-9]{1,3} ?[0-9]{4}-[0-9]{3}-[0-9]{4}" title="Ejemplo: +58 0414-654-8189" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
+            <input type="number" id="telefono" placeholder="Teléfono (Ej: 04146548189)" title="Ejemplo: +58 0414-654-8189" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
             
             <select id="cargo" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
                 <option value="" disabled selected>Seleccione su cargo...</option>
@@ -38,9 +38,9 @@
 
             <input type="password" id="clave_seguridad" placeholder="Clave de Seguridad del Sistema" required style="width: 100%; margin-bottom: 20px; padding: 10px; border: 2px solid red;">
 
-            <button type="submit" class="btn" style="width: 100%; background: #00d2ff;">Registrar Staff</button>
+            <button type="submit" class="btn" style="width: 100%; background: #00d2ff;">Registrar</button>
         </form>
-        <p style="text-align: center; margin-top: 15px;"><a href="login.html" style="color: white;">Ya tengo cuenta, iniciar sesión</a></p>
+        <p style="text-align: center; margin-top: 15px;"><a href="login.html" style="color: rgb(0, 0, 0);">Ya tengo cuenta, iniciar sesión</a></p>
     </div>
 
     <script>
