@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reservación - Dentalclean</title>
-    <link rel="icon" href="img/Logo.png">
+    <link class="favicon" rel="icon" href="img/Logo.png">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="body-servicios"> <header>
-        <h1><img src="img/Logo.png">Dentalclean</h1>
+<body class="body-servicios"> 
+    <header>
+        <h1><img src="img/Logo.png" alt="Logo">Dentalclean</h1>
         <nav>
             <ul>
                 <li><a href="inicio.html">Inicio</a></li>
@@ -31,22 +32,22 @@
                 <div class="input-group grid-2">
                     <div class="field">
                         <label class="label-style">Nombres</label>
-                        <input type="text" id="nombres" name="nombres" oninput="this.value = this.value.replace (/[^a-zA-ZáéíóúÁÉÍÓÚ\s]/g, '')" placeholder="Nombres" required>
+                        <input type="text" id="nombres" name="nombres" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚ\s]/g, '')" placeholder="Nombres" maxlength="20" required>
                     </div>
                     <div class="field">
                         <label class="label-style">Apellidos</label>
-                        <input type="text" id="apellidos" name="apellidos" oninput="this.value = this.value.replace (/[^a-zA-ZáéíóúÁÉÍÓÚ\s]/g, '')"  placeholder="Apellidos" required>
+                        <input type="text" id="apellidos" name="apellidos" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚ\s]/g, '')" placeholder="Apellidos" maxlength="20" required>
                     </div>
                 </div>
 
                 <div class="input-group grid-2">
                     <div class="field">
                         <label class="label-style">Cédula</label>
-                        <input type="number" id="cedula" name="cedula" placeholder="Cédula de Identidad" required>
+                        <input type="number" id="cedula" name="cedula" placeholder="Cédula de Identidad" oninput="if(this.value.length > 8) { this.value = this.value.slice(0, 8); }" required>
                     </div>
                     <div class="field">
                         <label class="label-style">Teléfono</label>
-                        <input type="number" id="telefono" name="telefono" placeholder="Número de teléfono" required>
+                        <input type="number" id="telefono" name="telefono" placeholder="Número de teléfono" oninput="if(this.value.length > 15) { this.value = this.value.slice(0, 15); }" required>
                     </div>
                 </div>
                 
@@ -65,18 +66,18 @@
                     <label class="label-style">Tratamiento</label>
                     <select id="tratamiento" name="tratamiento" required>
                         <option value="" disabled selected>¿En qué tratamiento estás interesado?</option>
-                        <option value="Implantologia">Implantología Estratégica</option>
-                        <option value="Diseno">Diseño de Sonrisa</option>
+                        <option value="Implantología Estratégica">Implantología Estratégica</option>
+                        <option value="Diseño de Sonrisa">Diseño de Sonrisa</option>
                         <option value="Ortodoncia">Ortodoncia</option>
-                        <option value="Integral">Odontología Integral</option>
-                        <option value="Aclaramiento">Aclaramiento Dental</option>
-                        <option value="Limpieza">Limpieza Dental</option>
+                        <option value="Odontología Integral">Odontología Integral</option>
+                        <option value="Aclaramiento Dental">Aclaramiento Dental</option>
+                        <option value="Limpieza Dental">Limpieza Dental</option>
                     </select>
                 </div>
 
                 <div class="field">
                     <label class="label-style">Consulta</label>
-                    <textarea id="consulta" name="consulta" rows="4" placeholder="Escríbenos tu consulta..." required></textarea>
+                    <textarea id="consulta" name="consulta" rows="4" placeholder="Escríbenos tu consulta..." maxlength="60" required></textarea>
                 </div>
                 
                 <button type="submit" class="btn-submit">Confirmar Reservación</button>
@@ -88,7 +89,7 @@
         <div class="footer-content">
             <p><strong>Dr. Kevin Da Costa</strong></p>
             <p>Ubicación: UNEFA Extensión Punto Fijo, Falcón.</p>
-            <p>tel. (0424) 654-8189 | <a href="https://wa.me/584246548189" target="_blank">Escríbenos al WhatsApp</a></p>
+            <p>Tel. (0424) 654-8189 | <a href="https://wa.me/584246548189" target="_blank">Escríbenos al WhatsApp</a></p>
         </div>
     </footer>
 

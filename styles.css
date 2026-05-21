@@ -343,12 +343,12 @@ footer a {
 
 /* Etiqueta de precio flotante */
 .badge-precio {
-    position: absolute;
+    position:absolute;
     top: 15px;
     right: 15px;
     background: var(--cyan-bright);
     color: white;
-    padding: 0.5rem 1rem;
+    padding: 6px;
     border-radius: 50px;
     font-weight: 800;
     font-size: 1.2rem;
