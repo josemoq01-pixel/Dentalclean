@@ -2,58 +2,60 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registro de Staff - Dentalclean</title>
+    <title>Alta de Personal - Dentalclean</title>
     <link rel="stylesheet" href="styles.css">
-        <link rel="icon" href="img/Logo.png">
+    <link rel="icon" href="img/Logo.png">
 </head>
-<body class="body-servicios">
-    <div class="glass-container" style="max-width: 500px; margin: 2rem auto;">
-        <h2 style="text-align: center;">Registro de Personal</h2>
+<body class="bg-login">
+    <div class="glass-container" style="max-width: 550px; margin: 3rem auto;">
+        <h2 style="text-align: center; color:var(--secondary-color); margin-bottom: 20px;">Enrolamiento de Personal</h2>
+        <p style="text-align: center; color:#94a3b8; margin-bottom: 30px;">Requiere clave maestra de administración.</p>
+
         <form id="registroForm">
-            <input type="text" id="nombres" placeholder="Nombres" oninput="this.value = this.value.replace (/[^a-zA-ZáéíóúÁÉÍÓÚ\s]/g, '')" title="Solo letras permitidas" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
-            <input type="text" id="apellidos" placeholder="Apellidos" oninput="this.value = this.value.replace (/[^a-zA-ZáéíóúÁÉÍÓÚ\s]/g, '')" title="Solo letras permitidas" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="nombres" placeholder="Nombres" required>
+                <input type="text" id="apellidos" placeholder="Apellidos" required>
+            </div>
             
-            <input type="number" id="cedula" placeholder="Nro de Cédula (Ej: 31397398)" pattern="\d{1,2}\.\d{3}\.\d{3}" title="Formato: xx.xxx.xxx" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
+            <input type="number" id="cedula" placeholder="Nro de Cédula de Identidad" required>
+            <input type="number" id="telefono" placeholder="Teléfono celular" required>
             
-            <input type="number" id="telefono" placeholder="Teléfono (Ej: 04146548189)" title="Ejemplo: +58 0414-654-8189" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
-            
-            <select id="cargo" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
-                <option value="" disabled selected>Seleccione su cargo...</option>
-                <option value="Director Médico/Gerente">Director Médico/Gerente</option>
+            <select id="cargo" required>
+                <option value="" disabled selected>Seleccione la especialidad...</option>
+                <option value="Director Médico">Director Médico</option>
                 <option value="Odontólogo General">Odontólogo General</option>
-                <option value="Especialistas">Especialistas</option>
-                <option value="Higienista Dental">Higienista Dental</option>
-                <option value="Auxiliar Dental / Asistente">Auxiliar Dental / Asistente</option>
-                <option value="Recepcionista / Asesor">Recepcionista / Asesor al Paciente</option>
-                <option value="Protésico Dental">Protésico Dental</option>
+                <option value="Cirujano Maxilofacial">Cirujano Maxilofacial</option>
+                <option value="Ortodoncista">Ortodoncista</option>
+                <option value="Ayudante / Higienista">Ayudante / Higienista</option>
             </select>
 
-            <select id="horario" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
-                <option value="" disabled selected>Seleccione horario...</option>
-                <option value="El primer turno de 6am hasta 2pm">Primer turno (6:00 AM - 2:00 PM)</option>
-                <option value="El Segundo turno de 10 am hasta las 6pm">Segundo turno (10:00 AM - 6:00 PM)</option>
-                <option value="turno completo de 6am hasta 6pm">Turno completo (6:00 AM - 6:00 PM)</option>
+            <select id="horario" required>
+                <option value="" disabled selected>Asignación de turno operativo...</option>
+                <option value="Mañana (6:00 AM - 1:00 PM)">Turno Mañana (6:00 AM - 1:00 PM)</option>
+                <option value="Tarde (1:00 PM - 6:00 PM)">Turno Tarde (1:00 PM - 6:00 PM)</option>
             </select>
 
-            <input type="password" id="password" placeholder="Cree su contraseña de acceso" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
+            <input type="password" id="password" placeholder="Crear contraseña personal de acceso" required>
+            
+            <div style="border-top:1px solid rgba(255,255,255,0.2); margin:20px 0;"></div>
 
-            <input type="password" id="clave_seguridad" placeholder="Clave de Seguridad del Sistema" required style="width: 100%; margin-bottom: 20px; padding: 10px; border: 2px solid red;">
+            <input type="password" id="clave_seguridad" placeholder="🔒 Clave Maestra Dentalclean" required style="border-color:var(--accent-color); background:rgba(230, 57, 70, 0.1);">
 
-            <button type="submit" class="btn" style="width: 100%; background: #00d2ff;">Registrar</button>
+            <button type="submit" class="btn" style="width: 100%; margin-top:10px;">Registrar Credencial en la Nube</button>
         </form>
-        <p style="text-align: center; margin-top: 15px;"><a href="login.html" style="color: rgb(0, 0, 0);">Ya tengo cuenta, iniciar sesión</a></p>
+
+        <p style="text-align: center; margin-top: 20px;">
+            <a href="login.html" style="color: #cbd5e1;">Cancelar y regresar al Login</a>
+        </p>
     </div>
 
     <script>
         document.getElementById('registroForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const claveSeguridad = document.getElementById('clave_seguridad').value;
             
-            // AUTODESTRUCCIÓN / CIERRE SI LA CLAVE ESTÁ MAL
             if(claveSeguridad !== "Dentalclean2026") {
-                document.body.innerHTML = "<h1 style='color:red; text-align:center; font-size:50px; margin-top:20%;'>⚠️ ACCESO DE SEGURIDAD DENEGADO ⚠️</h1><p style='color:white; text-align:center;'>La página se ha bloqueado.</p>";
-                setTimeout(() => window.close(), 2000); // Intenta cerrar la pestaña
+                document.body.innerHTML = `<div style="display:flex; height:100vh; align-items:center; justify-content:center; background:#000;"><h1 style='color:red; font-size:4rem; text-shadow:0 0 20px red;'>🚨 BRECHA DE SEGURIDAD DETECTADA 🚨</h1></div>`;
                 return;
             }
 
@@ -65,22 +67,25 @@
                 cargo: document.getElementById('cargo').value,
                 horario: document.getElementById('horario').value,
                 password: document.getElementById('password').value,
-                clave_seguridad: claveSeguridad
             };
 
-            const response = await fetch('/api/registro', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
+            try {
+                const response = await fetch('/api/registro', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
 
-            const result = await response.json();
+                const result = await response.json();
 
-            if(result.success) {
-                alert(`✅ Registro Exitoso.\n\nTUS DATOS DE ACCESO:\nUsuario asignado: ${result.usuario}\n\nGuarda este usuario, lo necesitarás para iniciar sesión.`);
-                window.location.href = 'login.html';
-            } else {
-                alert("Error en el registro: " + result.error);
+                if(result.success) {
+                    alert(`✅ Registro procesado.\n\nTUS CREDENCIALES:\nUsuario asignado: ${result.usuario}\n\nEscríbelo, lo necesitarás para entrar al Core.`);
+                    window.location.href = 'login.html';
+                } else {
+                    alert("Error interno: " + result.error);
+                }
+            } catch (err) {
+                alert("Sin conexión con el servidor Core.");
             }
         });
     </script>

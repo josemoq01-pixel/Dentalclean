@@ -2,58 +2,64 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Iniciar Sesión - Dentalclean</title>
-        <link rel="icon" href="img/Logo.png">
+    <title>Protocolo de Acceso - Dentalclean Core</title>
+    <link rel="icon" href="img/Logo.png">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="body-servicios">
-    <div class="glass-container" style="max-width: 400px; margin: 10% auto; text-align: center;">
-        <img src="img/Logo.png" alt="Logo" style="width: 100px; margin-bottom: 20px;">
-        <h2>BASE DE DATOS</h2>
+<body class="bg-login">
+    <div class="glass-container" style="max-width: 450px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <img src="img/Logo.png" alt="Logo" style="width: 80px; filter: drop-shadow(0 0 10px #00d2ff);">
+            <h2 style="color:var(--secondary-color); margin-top:15px; font-size: 1.8rem;">SISTEMA CORE</h2>
+            <p style="color:#94a3b8; font-size:0.9rem;">Autenticación Requerida</p>
+        </div>
+
         <form id="loginForm">
-            <input type="text" id="login_usuario" placeholder="Usuario Asignado" required style="width: 100%; margin-bottom: 10px; padding: 10px;">
+            <input type="text" id="login_usuario" placeholder="ID de Usuario / Credencial" required autocomplete="off">
             
-            <div style="display: flex; margin-bottom: 20px;">
-                <input type="password" id="login_password" placeholder="Contraseña" required style="width: 85%; padding: 10px;">
-                <button type="button" id="togglePassword" style="width: 15%; cursor: pointer;">👁️</button>
+            <div style="display: flex; gap:10px;">
+                <input type="password" id="login_password" placeholder="Clave de Encriptación" required>
+                <button type="button" id="togglePassword" style="width: 50px; padding:0; background:rgba(255,255,255,0.1); font-size:1.2rem;">👁️</button>
             </div>
 
-            <button type="submit" class="btn" style="width: 100%;">Iniciar Sesión</button>
+            <button type="submit" class="btn" style="width: 100%; margin-top:15px;">Autorizar Ingreso</button>
         </form>
-        <p style="margin-top: 15px;"><a href="registro.html" style="color: rgb(0, 0, 0);">Registrar nuevo personal</a></p>
+        
+        <p style="text-align: center; margin-top: 25px;">
+            <a href="registro.html" style="color: #cbd5e1; text-decoration: underline;">Dar de alta a nuevo colaborador</a>
+            <br><br><a href="inicio.html" style="color: #e63946; font-size:0.85rem;">← Volver al portal público</a>
+        </p>
     </div>
 
     <script>
-        // Lógica para mostrar/ocultar contraseña
-        const togglePassword = document.getElementById('togglePassword');
-        const password = document.getElementById('login_password');
-        
-        togglePassword.addEventListener('click', function () {
-            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-            password.setAttribute('type', type);
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const pwd = document.getElementById('login_password');
+            pwd.type = pwd.type === 'password' ? 'text' : 'password';
         });
 
-        // Lógica para procesar el login
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const usu = document.getElementById('login_usuario').value;
             const pass = document.getElementById('login_password').value;
 
-            const response = await fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ usuario: usu, password: pass })
-            });
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario: usu, password: pass })
+                });
 
-            const result = await response.json();
+                const result = await response.json();
 
-            if(result.success) {
-                alert(`¡Bienvenido/a de nuevo, ${result.nombre}! Acceso concedido.`);
-                // Guardamos el pase de seguridad en el navegador
-                localStorage.setItem('accesoDentalclean', 'permitido');
-                window.location.href = 'BD.html'; // Lo enviamos a la página principal
-            } else {
-                alert("❌ " + result.error);
+                if(result.success) {
+                    localStorage.setItem('accesoDentalclean', 'permitido');
+                    localStorage.setItem('nombreDentalclean', result.nombre); // Guarda el nombre para el saludo futurista
+                    window.location.href = 'BD.html'; 
+                } else {
+                    alert("❌ Credenciales inválidas. Acceso denegado a los servidores Core.");
+                }
+            } catch(err) {
+                alert("Falla de conexión con la base de datos central.");
             }
         });
     </script>

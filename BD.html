@@ -2,125 +2,267 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>DB Manager - Dentalclean</title>
+    <title>Core Database - Dentalclean</title>
+    <link rel="icon" href="img/Logo.png">
     <link rel="stylesheet" href="styles.css">
-    <style>
-        .db-container {
-            width: 90%;
-            margin: 20px auto;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            border-radius: 15px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-        }
-        .tab-btn {
-            padding: 10px 20px;
-            background: rgba(0, 0, 0, 0.2);
-            border: none;
-            color: rgb(255, 255, 255);
-            cursor: pointer;
-            border-radius: 5px;
-            transition: 0.3s;
-        }
-        .tab-btn.active {
-            background: #00d2ff;
-            box-shadow: 0 0 15px #00d2ff;
-        }
-        .table-wrapper {
-            overflow-x: auto;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        th {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 12px;
-            text-align: left;
-            border-bottom: 2px solid #00d2ff;
-        }
-        td {
-            padding: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        tr:hover { background: rgba(255, 255, 255, 0.05); }
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
-<body class="clinic-bg">
-    <header>
-        <h1><img src="img/Logo.png"> Dentalclean DB Viewer</h1>
-        <nav>
-            <ul>
-                <li><a href="BD.html">Inicio</a></li>
-                <li><a href="login.html">Salir</a></li>
-            </ul>
-        </nav>
-    </header>
+<body class="admin-body">
 
-    <div class="db-container">
-        <div class="tabs">
-            <button class="tab-btn active" onclick="cargarTabla('reservaciones', this)">Reservaciones</button>
-            <button class="tab-btn" onclick="cargarTabla('pacientes', this)">Pacientes Reservados</button>
-            <button class="tab-btn" onclick="cargarTabla('tratamientos', this)">Tratamientos</button>
-            <button class="tab-btn" onclick="cargarTabla('odontologos', this)">Personal de Trabajo</button>
-            <button class="tab-btn" onclick="cargarTabla('precios', this)">Precios</button>
+    <aside class="admin-sidebar">
+        <div class="brand">
+            <img src="img/Logo.png" alt="DC Logo">
+            <h2>Dentalclean Core</h2>
+            <p style="font-size:0.8rem; color:#64748b; margin-top:5px;" id="welcome-msg">Conectando...</p>
+        </div>
+        <button class="menu-btn active" onclick="cambiarTab('reservaciones', this)">📋 Reservas Clínicas</button>
+        <button class="menu-btn" onclick="cambiarTab('personal_registrado', this)">👨‍⚕️ Personal Médico</button>
+        <button class="menu-btn" onclick="cambiarTab('pagos', this)">💳 Gestión de Pagos</button>
+        <button class="menu-btn" onclick="cambiarTab('consultas', this)">🩺 Fichas de Consulta</button>
+        <button class="menu-btn" onclick="cambiarTab('planes_tratamiento', this)">📄 Planes (PDF Gen)</button>
+        <button class="menu-btn" onclick="cambiarTab('precios', this)">💲 Precios y Tasas</button>
+        <div style="margin: 20px 0; border-top: 1px solid rgba(255,255,255,0.1);"></div>
+        <button class="menu-btn" onclick="cambiarTab('reservas_eliminadas', this)">🗑️ Papelera de Citas</button>
+        <button class="menu-btn" onclick="cambiarTab('analisis_financiero_consultas', this)">📊 Análisis Financiero</button>
+        <button class="menu-btn" onclick="cambiarTab('cantidad_reservas_actuales', this)">📈 Médicos Activos</button>
+        
+        <div style="margin-top:auto; text-align:center; padding:20px;">
+            <button onclick="cerrarSesion()" style="background:transparent; border:1px solid var(--accent-color); color:var(--accent-color); width:100%; font-size:0.9rem;">Cerrar Sistema</button>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        <div class="admin-header">
+            <h1 id="titulo-seccion">Reservas Clínicas</h1>
+            <div class="user-info">
+                <span class="bcv-tag" id="bcv-indicator">BCV: Cargando...</span>
+                <button onclick="exportarExcel()" style="padding: 10px 20px; font-size:0.9rem;">⬇️ Reporte Excel</button>
+            </div>
+        </div>
+
+        <div id="panel-formularios" class="insert-panel">
+            <h3 id="form-title">Procesar Nuevo Registro</h3>
+            <div id="form-dinamico-content" class="insert-grid"></div>
         </div>
 
         <div class="table-wrapper">
-            <table id="db-table">
+            <table id="datos-tabla">
                 <thead><tr id="table-head"></tr></thead>
                 <tbody id="table-body"></tbody>
             </table>
         </div>
-    </div>
+    </main>
 
     <script>
-        async function cargarTabla(nombreTabla, btn) {
-            // Estética de botones
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+        if (localStorage.getItem('accesoDentalclean') !== 'permitido') {
+            document.body.innerHTML = `<div style="text-align:center; padding-top:20%; background:#0f172a; height:100vh; color:white;"><h1 style="color:red; font-size: 3rem;">⚠️ ACCESO RESTRINGIDO ⚠️</h1><button onclick="window.location.href='login.html'" class="btn" style="margin-top:20px;">Ir a Login</button></div>`;
+        }
 
-            const response = await fetch(`/api/data/${nombreTabla}`);
-            const datos = await response.json();
+        let tablaActiva = 'reservaciones';
+        let tasaGlobalBCV = 55.20;
 
-            const head = document.getElementById('table-head');
-            const body = document.getElementById('table-body');
+        window.onload = async () => {
+            configurarSaludo();
+            try {
+                let r = await fetch('/api/bcv');
+                let d = await r.json();
+                tasaGlobalBCV = d.tasa;
+                document.getElementById('bcv-indicator').innerText = `BCV Oficial: ${tasaGlobalBCV.toFixed(2)} Bs/$`;
+            } catch(e) { console.error(e); }
+            cambiarTab('reservaciones', document.querySelector('.menu-btn.active'));
+        };
+
+        function configurarSaludo() {
+            const h = new Date().getHours();
+            let saludo = h < 12 ? "Buenos días" : h < 19 ? "Buenas tardes" : "Buenas noches";
+            const usr = localStorage.getItem('nombreDentalclean') || 'Administrador';
+            document.getElementById('welcome-msg').innerText = `${saludo}, ${usr}.`;
+        }
+
+        function cerrarSesion() {
+            localStorage.removeItem('accesoDentalclean');
+            window.location.href = 'login.html';
+        }
+
+        function cambiarTab(tabla, btn) {
+            tablaActiva = tabla;
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+            document.getElementById('titulo-seccion').innerText = btn.innerText.replace(/[^\w\s]/gi, '').trim();
             
-            head.innerHTML = "";
-            body.innerHTML = "";
+            renderFormulario(tabla);
+            cargarTabla(tabla);
+        }
 
-            if (datos.length > 0) {
-                // Crear encabezados basados en las llaves del objeto (columnas de SQLite)
-                Object.keys(datos[0]).forEach(col => {
-                    head.innerHTML += `<th>${col.toUpperCase()}</th>`;
-                });
+        async function cargarTabla(tabla) {
+            try {
+                const response = await fetch(`/api/data/${tabla}`);
+                const datos = await response.json();
+                const head = document.getElementById('table-head');
+                const body = document.getElementById('table-body');
+                
+                head.innerHTML = ""; body.innerHTML = "";
+                if (datos.length > 0) {
+                    let columnas = Object.keys(datos[0]);
+                    if (tabla === 'precios') columnas.push("PRECIO_BCV_ACTUAL");
+                    
+                    columnas.forEach(col => head.innerHTML += `<th>${col.replace(/_/g, ' ').toUpperCase()}</th>`);
+                    
+                    const vistasSoloLectura = ['reservas_eliminadas', 'analisis_financiero_consultas', 'cantidad_reservas_actuales'];
+                    if (!vistasSoloLectura.includes(tabla)) head.innerHTML += `<th>ACCIONES</th>`;
 
-                // Crear filas
-                datos.forEach(fila => {
-                    let tr = "<tr>";
-                    Object.values(fila).forEach(val => {
-                        tr += `<td>${val !== null ? val : ''}</td>`;
+                    datos.forEach(fila => {
+                        let tr = document.createElement('tr');
+                        Object.entries(fila).forEach(([col, val]) => {
+                            let td = document.createElement('td');
+                            td.textContent = val !== null ? val : '';
+                            td.dataset.campo = col;
+                            tr.appendChild(td);
+                        });
+
+                        if (tabla === 'precios') {
+                            let tdBf = document.createElement('td');
+                            tdBf.innerHTML = `<span style="color:#00d2ff; font-weight:bold;">${(fila.precio * tasaGlobalBCV).toFixed(2)} Bs</span>`;
+                            tr.appendChild(tdBf);
+                        }
+
+                        if (!vistasSoloLectura.includes(tabla)) {
+                            let tdAcciones = document.createElement('td');
+                            let btns = `<button class="btn-action btn-edit" onclick="conmutarEdicion(this, '${fila.id || fila.id_precio}')">✎ Editar</button>
+                                        <button class="btn-action btn-delete" onclick="eliminarRegistro('${fila.id || fila.id_precio}')">🗑️ Borrar</button>`;
+                            if (tabla === 'reservaciones' && fila.estado === 'Pendiente') {
+                                btns = `<button class="btn-action" style="color:#2ecc71; border-color:#2ecc71;" onclick="aprobarCita('${fila.id}')">✓ Aprobar</button> ` + btns;
+                            }
+                            tdAcciones.innerHTML = btns;
+                            tr.appendChild(tdAcciones);
+                        }
+                        body.appendChild(tr);
                     });
-                    tr += "</tr>";
-                    body.innerHTML += tr;
-                });
+                } else {
+                    body.innerHTML = `<tr><td colspan="20" style="text-align:center; color:#94a3b8;">No hay registros disponibles en la nube de ${tabla}.</td></tr>`;
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function renderFormulario(tabla) {
+            const container = document.getElementById('form-dinamico-content');
+            const panel = document.getElementById('panel-formularios');
+            const vistas = ['reservas_eliminadas', 'analisis_financiero_consultas', 'cantidad_reservas_actuales', 'precios'];
+            
+            if(vistas.includes(tabla)) {
+                panel.style.display = 'none'; return;
+            } else { panel.style.display = 'block'; }
+
+            if(tabla === 'reservaciones') {
+                container.innerHTML = `
+                    <input type="text" id="ins_pnom" placeholder="Primer Nombre" required>
+                    <input type="text" id="ins_papel" placeholder="Primer Apellido" required>
+                    <input type="text" id="ins_ced" placeholder="Cédula" required>
+                    <input type="date" id="ins_fec" required>
+                    <input type="time" id="ins_hor" required>
+                    <select id="ins_tra"><option value="Ortodoncia">Ortodoncia</option><option value="Limpieza Dental">Limpieza Dental</option></select>
+                    <button onclick="guardarRegistro('reservaciones')" class="btn" style="padding:10px;">✚ Insertar Cita</button>
+                `;
+            } else if (tabla === 'pagos') {
+                container.innerHTML = `
+                    <input type="text" id="pag_id" placeholder="ID de Reserva" oninput="autoCompletar(this.value)">
+                    <input type="text" id="pag_cli" placeholder="Paciente Localizado" readonly>
+                    <input type="number" id="pag_usd" placeholder="Monto ($)">
+                    <select id="pag_met"><option value="Zelle">Zelle</option><option value="Pago movil">Pago Móvil</option></select>
+                    <input type="text" id="pag_ref" placeholder="Referencia TX">
+                    <button onclick="guardarRegistro('pagos')" class="btn" style="padding:10px;">✚ Procesar Pago</button>
+                `;
+            } else if (tabla === 'planes_tratamiento') {
+                container.innerHTML = `
+                    <input type="text" id="pl_id" placeholder="ID Paciente">
+                    <input type="text" id="pl_cli" placeholder="Nombre Completo">
+                    <textarea id="pl_msg" placeholder="Diagnóstico y Plan a realizar..." style="grid-column: 1/-1; height:60px;"></textarea>
+                    <button onclick="generarPDFClinico()" class="btn" style="background:#8b5cf6; grid-column:1/-1;">📥 Generar y Descargar PDF Clínico</button>
+                `;
             } else {
-                body.innerHTML = "<tr><td colspan='5'>No hay datos en esta tabla.</td></tr>";
+                container.innerHTML = `<p style="color:#94a3b8; font-style:italic;">Formulario dinámico en construcción para esta entidad...</p>`;
             }
         }
-        // Carga inicial
-        window.onload = () => cargarTabla('reservaciones', document.querySelector('.tab-btn'));
+
+        async function autoCompletar(id) {
+            if(!id) return;
+            let r = await fetch(`/api/data/reservaciones`); let data = await r.json();
+            let m = data.find(x => x.id == id);
+            if(m) {
+                if(document.getElementById('pag_cli')) { document.getElementById('pag_cli').value = m.primer_nombre; document.getElementById('pag_usd').value = m.precio; }
+            }
+        }
+
+        async function guardarRegistro(tabla) {
+            let data = {};
+            if(tabla === 'reservaciones') {
+                data = { primer_nombre: document.getElementById('ins_pnom').value, primer_apellido: document.getElementById('ins_papel').value, cedula: document.getElementById('ins_ced').value, fecha: document.getElementById('ins_fec').value, hora: document.getElementById('ins_hor').value, tratamiento: document.getElementById('ins_tra').value, estado: 'Aprobada' };
+            } else if (tabla === 'pagos') {
+                let usd = parseFloat(document.getElementById('pag_usd').value);
+                data = { reservacion_id: document.getElementById('pag_id').value, cliente_nombre: document.getElementById('pag_cli').value, monto_usd: usd, monto_bs: usd * tasaGlobalBCV, metodo_pago: document.getElementById('pag_met').value, referencia: document.getElementById('pag_ref').value, tasa_dolar: tasaGlobalBCV };
+            }
+            let r = await fetch(`/api/data/${tabla}`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+            if((await r.json()).success) { cargarTabla(tabla); renderFormulario(tabla); }
+        }
+
+        async function aprobarCita(id) { await fetch(`/api/reservaciones/${id}/aprobar`, { method: 'PUT' }); cargarTabla(tablaActiva); }
+        async function eliminarRegistro(id) { if(confirm("¿Purgar registro?")) { await fetch(`/api/data/${tablaActiva}/${id}`, { method: 'DELETE' }); cargarTabla(tablaActiva); } }
+
+        function conmutarEdicion(btn, id) {
+            const tr = btn.closest('tr');
+            if (btn.innerText.includes("Editar")) {
+                btn.innerHTML = "💾 Guardar"; btn.style.color = "#2ecc71"; btn.style.borderColor = "#2ecc71";
+                tr.querySelectorAll('td').forEach(td => {
+                    const c = td.dataset.campo;
+                    if (c && !['id', 'id_precio', 'estado'].includes(c)) td.innerHTML = `<input type="text" value="${td.textContent}" style="background:transparent; color:#00d2ff; border:1px solid #00d2ff; padding:5px; border-radius:4px; width:100%;">`;
+                });
+            } else {
+                let data = {};
+                tr.querySelectorAll('td').forEach(td => { const inp = td.querySelector('input'); if (inp) data[td.dataset.campo] = inp.value; });
+                fetch(`/api/data/${tablaActiva}/${id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) }).then(() => cargarTabla(tablaActiva));
+            }
+        }
+
+        // --- GENERADOR FUTURISTA DE PDF ---
+        function generarPDFClinico() {
+            const paciente = document.getElementById('pl_cli').value || "Paciente_Generico";
+            const plan = document.getElementById('pl_msg').value || "Plan no especificado.";
+            
+            const documentoHTML = document.createElement('div');
+            documentoHTML.style.padding = '40px';
+            documentoHTML.style.fontFamily = 'Arial, sans-serif';
+            documentoHTML.innerHTML = `
+                <div style="border-bottom: 3px solid #00d2ff; padding-bottom: 10px; margin-bottom: 20px;">
+                    <h1 style="color: #073360; margin:0;">Dentalclean Corporativo</h1>
+                    <p style="color: #64748b; margin:0;">Reporte Oficial y Plan de Tratamiento Médico</p>
+                </div>
+                <h2>Paciente: <span style="color:#00d2ff;">${paciente}</span></h2>
+                <p><strong>Fecha de Emisión:</strong> ${new Date().toLocaleDateString()}</p>
+                <div style="background:#f0f4f8; padding:20px; border-radius:8px; margin:20px 0;">
+                    <h3 style="margin-top:0;">📋 Detalles Clínicos:</h3>
+                    <p style="font-size:1.1rem; line-height:1.6;">${plan}</p>
+                </div>
+                <div style="text-align:center; margin-top:40px;">
+                    <h3 style="color:#073360;">Odontograma Adjunto</h3>
+                    <div style="border:2px dashed #ccc; padding:50px; color:#aaa; font-style:italic; border-radius:8px;">[Representación Visual del Odontograma del Paciente Renderizada Aquí]</div>
+                </div>
+                <p style="text-align:center; margin-top:40px; font-size:0.8rem; color:#999;">Generado automáticamente por el Sistema Inteligente Dentalclean Core © 2026</p>
+            `;
+
+            html2pdf().set({
+                margin: 1, filename: `Plan_Tratamiento_${paciente.replace(/\s+/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            }).from(documentoHTML).save();
+        }
+
+        function exportarExcel() {
+            const table = document.getElementById("datos-tabla").outerHTML;
+            const link = document.createElement('a');
+            link.href = 'data:application/vnd.ms-excel,' + encodeURIComponent(table);
+            link.download = `DataCore_${tablaActiva}.xls`;
+            link.click();
+        }
     </script>
 </body>
 </html>

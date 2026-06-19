@@ -7,77 +7,68 @@
     <link rel="icon" href="img/Logo.png">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="body-servicios">
+<body style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
     <header>
         <h1><img src="img/Logo.png">Dentalclean</h1>
         <nav>
             <ul>
                 <li><a href="inicio.html">Inicio</a></li>
-                <li><a href="informacion.html">Informacion</a></li>
-                <li><a href="Precios y servicios.html">Precios y Servicios</a></li>
-                <li><a href="reservacion.html">Reservacion</a></li>
+                <li><a href="informacion.html">Información</a></li>
+                <li><a href="Precios y servicios.html" class="active">Precios y Servicios</a></li>
+                <li><a href="reservacion.html">Reservación</a></li>
             </ul>
         </nav>
     </header>
 
-    <main class="contenedor-servicios">
-        <h2 class="titulo-animado">Nuestros Servicios Especializados</h2>
+    <main class="main-content">
+        <div style="text-align:center; margin-bottom: 4rem;">
+            <h2 style="color: white; font-size: 3rem; text-shadow: 0 0 20px rgba(0,210,255,0.5);">Tratamientos de Vanguardia</h2>
+            <p style="color: #94a3b8; font-size: 1.1rem; margin-top: 10px;">Precios transparentes y tecnología de precisión garantizada.</p>
+        </div>
         
-        <div class="grid-servicios">
-            <!-- Servicio 1 -->
-            <div class="card card-servicio">
-                <div class="badge-precio">$450</div>
-                <h3>Implantología Estratégica</h3>
-                <p><strong>¿Qué es?:</strong> Reemplazo de dientes perdidos mediante implantes de titanio de alta durabilidad.</p>
-                <p><strong>Proceso:</strong> Evaluación 3D, colocación quirúrgica y fijación de corona definitiva.</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem;">
+            
+            <div class="card" style="position:relative; background:rgba(255,255,255,0.05); color:white; border-color:rgba(255,255,255,0.1);">
+                <div style="position:absolute; top:-20px; right:20px; background:var(--secondary-color); color:#000; font-weight:800; font-size:1.5rem; padding:10px 20px; border-radius:30px; box-shadow:var(--neon-shadow);">$450</div>
+                <h3 style="color:var(--secondary-color); font-size:1.5rem;">Implantología 3D</h3>
+                <p style="margin-top:15px; color:#cbd5e1; line-height:1.6;">Reemplazo bio-compatible de dientes perdidos mediante fijaciones de titanio escaneadas y fresadas por computadora.</p>
             </div>
 
-            <!-- Servicio 2 -->
-            <div class="card card-servicio">
-                <div class="badge-precio">$120</div>
-                <h3>Diseño de Sonrisa</h3>
-                <p><strong>¿Qué es?:</strong> Armonización estética de tamaño, forma y color de tus dientes.</p>
-                <p><strong>Proceso:</strong> Escaneo digital y carillas de resina adaptadas a tu fisionomía.</p>
+            <div class="card" style="position:relative; background:rgba(255,255,255,0.05); color:white; border-color:rgba(255,255,255,0.1);">
+                <div style="position:absolute; top:-20px; right:20px; background:var(--secondary-color); color:#000; font-weight:800; font-size:1.5rem; padding:10px 20px; border-radius:30px; box-shadow:var(--neon-shadow);">$120</div>
+                <h3 style="color:var(--secondary-color); font-size:1.5rem;">Diseño de Sonrisa Digital</h3>
+                <p style="margin-top:15px; color:#cbd5e1; line-height:1.6;">Carillas de resina inyectada modeladas con software CAD/CAM para lograr proporciones áureas en tu rostro.</p>
             </div>
 
-            <!-- Servicio 3 -->
-            <div class="card card-servicio">
-                <div class="badge-precio">$800</div>
-                <h3>Ortodoncia</h3>
-                <p><strong>¿Qué es?:</strong> Corrección profesional de la posición dental y la mordida funcional.</p>
-                <p><strong>Proceso:</strong> Brackets metálicos o estéticos con controles mensuales especializados.</p>
+            <div class="card" style="position:relative; background:rgba(255,255,255,0.05); color:white; border-color:rgba(255,255,255,0.1);">
+                <div style="position:absolute; top:-20px; right:20px; background:var(--secondary-color); color:#000; font-weight:800; font-size:1.5rem; padding:10px 20px; border-radius:30px; box-shadow:var(--neon-shadow);">$800</div>
+                <h3 style="color:var(--secondary-color); font-size:1.5rem;">Ortodoncia Invisible/Fija</h3>
+                <p style="margin-top:15px; color:#cbd5e1; line-height:1.6;">Alineación perfecta y rápida utilizando brackets de autoligado de baja fricción o alineadores transparentes.</p>
             </div>
 
-            <!-- Servicio 4 -->
-            <div class="card card-servicio">
-                <div class="badge-precio">$45</div>
-                <h3>Odontología Integral</h3>
-                <p><strong>¿Qué es?:</strong> Prevención y tratamiento de caries o restauraciones primarias.</p>
-                <p><strong>Proceso:</strong> Revisión general, limpieza profunda y restauración de piezas.</p>
+            <div class="card" style="position:relative; background:rgba(255,255,255,0.05); color:white; border-color:rgba(255,255,255,0.1);">
+                <div style="position:absolute; top:-20px; right:20px; background:#f59e0b; color:#000; font-weight:800; font-size:1.5rem; padding:10px 20px; border-radius:30px; box-shadow:0 0 15px rgba(245, 158, 11, 0.5);">$45</div>
+                <h3 style="color:#f59e0b; font-size:1.5rem;">Odontología General</h3>
+                <p style="margin-top:15px; color:#cbd5e1; line-height:1.6;">Restauración estética de caries mediante resinas fotocurables imperceptibles e indoloras.</p>
             </div>
 
-            <!-- Servicio 5 -->
-            <div class="card card-servicio">
-                <div class="badge-precio">$60</div>
-                <h3>Aclaramiento Dental</h3>
-                <p><strong>¿Qué es?:</strong> Reducción de manchas y aclarado de varios tonos en el esmalte.</p>
-                <p><strong>Proceso:</strong> Aplicación de gel blanqueador activado con tecnología de luz LED.</p>
+            <div class="card" style="position:relative; background:rgba(255,255,255,0.05); color:white; border-color:rgba(255,255,255,0.1);">
+                <div style="position:absolute; top:-20px; right:20px; background:#f59e0b; color:#000; font-weight:800; font-size:1.5rem; padding:10px 20px; border-radius:30px; box-shadow:0 0 15px rgba(245, 158, 11, 0.5);">$60</div>
+                <h3 style="color:#f59e0b; font-size:1.5rem;">Aclaramiento Dental LED</h3>
+                <p style="margin-top:15px; color:#cbd5e1; line-height:1.6;">Láser blanqueador de última generación que no causa sensibilidad post-operatoria.</p>
             </div>
 
-            <!-- Servicio 6 -->
-            <div class="card card-servicio">
-                <div class="badge-precio">$25</div>
-                <h3>Limpieza Dental</h3>
-                <p><strong>¿Qué es?:</strong> Eliminación profunda de placa bacteriana y sarro acumulado.</p>
-                <p><strong>Proceso:</strong> Uso de ultrasonido, pulido profiláctico y aplicación de flúor.</p>
+            <div class="card" style="position:relative; background:rgba(255,255,255,0.05); color:white; border-color:rgba(255,255,255,0.1);">
+                <div style="position:absolute; top:-20px; right:20px; background:#2ecc71; color:#000; font-weight:800; font-size:1.5rem; padding:10px 20px; border-radius:30px; box-shadow:0 0 15px rgba(46, 204, 113, 0.5);">$25</div>
+                <h3 style="color:#2ecc71; font-size:1.5rem;">Profilaxis Ultrasónica</h3>
+                <p style="margin-top:15px; color:#cbd5e1; line-height:1.6;">Limpieza vibratoria mediante cavitron para pulverizar cálculo y manchas de café/tabaco.</p>
             </div>
+            
         </div>
     </main>
 
-    <footer>
-        <p><strong>Dr. Kevin Da Costa</strong></p>
-        <p>Ubicacion: Universidad Nacional Experimental de la Fuerza Armada Nacional Bolivariana Extension, Punto Fijo 4123, Falcon.</p>
-        <p>Contacto: 0424-6548189 | <a href="https://wa.me/584246548189" target="_blank">Escribenos al WhatsApp</a></p>
+    <footer style="background: rgba(15, 23, 42, 0.5); border-top: 1px solid rgba(255,255,255,0.1);">
+        <p>UNEFA Extensión, Punto Fijo 4123, Falcón, Venezuela.</p>
     </footer>
 </body>
 </html>

@@ -7,62 +7,55 @@
     <link rel="icon" href="img/Logo.png">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="bg-inicio">
     <header>
-        <h1><img src="img/Logo.png">Dentalclean</h1>
+        <h1><img src="img/Logo.png" alt="Logo">Dentalclean</h1>
         <nav>
             <ul>
-                <li><a href="inicio.html">Inicio</a></li>
-                <li><a href="informacion.html">Informacion</a></li>
-                <li><a href="Precios y servicios.html">Precios y servicios</a></li>
-                <li><a href="reservacion.html">Reservacion</a></li>
+                <li><a href="inicio.html" class="active">Inicio</a></li>
+                <li><a href="informacion.html">Información</a></li>
+                <li><a href="Precios y servicios.html">Servicios y Precios</a></li>
+                <li><a href="reservacion.html">Reservación</a></li>
             </ul>
         </nav>
     </header>
 
-    <main>
+    <main class="main-content">
         <section class="hero">
-            <h2>Bienvenidos a la clinica odontologica del futuro</h2>
+            <h2>Odontología del Futuro, Hoy.</h2>
+            <p>En Dentalclean fusionamos talento de élite con innovación tecnológica para brindarte diagnósticos 3D ultraprecisos y tratamientos estéticos sin dolor. Experimenta la evolución de la salud bucodental en un entorno diseñado para tu confort y seguridad total.</p>
             <br>
-            <p>En Dentalclean, combinamos el talento humano con la tecnologia dental mas avanzada para ofrecerte diagnosticos precisos y tratamientos minimamente invasivos. Nos define la precision, la estetica y el deseo de transformar vidas a traves de sonrisas perfectas. Creemos que cada paciente es unico, por eso disenamos planes a tu medida en un espacio moderno y confortable.</p>
+            <button onclick="window.location.href='reservacion.html'">Agendar Valoración Digital</button>
         </section>
 
-        <!-- NUEVA SECCIÓN: EQUIPO MÉDICO -->
-        <section class="equipo-medico">
-            <h2 class="titulo-seccion">Nuestro Equipo de Especialistas</h2>
-            <div class="doctores-grid">
+        <section style="margin-top: 4rem;">
+            <h2 style="text-align:center; color:white; font-size: 2.5rem; text-shadow: 0 4px 10px rgba(0,0,0,0.8); margin-bottom: 2.5rem;">Dirección Médica</h2>
+            <div style="display:flex; gap:2rem; flex-wrap:wrap; justify-content:center;">
                 
-                <!-- Tarjeta Dr. Kevin Da Costa -->
-                <div class="card doctor-card">
-                    <img src="img/kevin.jpeg" alt="Dr. Kevin Da Costa" class="doctor-img">
-                    <h3>Dr. Kevin Da Costa</h3>
-                    <p>Especialista en ortodoncia invisible y diseño de sonrisa. Con una destacada trayectoria, el Dr. Da Costa se enfoca en devolverle la confianza a sus pacientes utilizando tecnología 3D y planificaciones precisas para lograr resultados estéticos impecables.</p>
+                <div class="card" style="flex:1; min-width:300px; text-align:center;">
+                    <img src="img/kevin.jpeg" alt="Dr. Kevin" style="width:120px; height:120px; border-radius:50%; border:4px solid var(--secondary-color); margin-bottom:1rem;">
+                    <h3 style="color:var(--primary-color);">Dr. Kevin Da Costa</h3>
+                    <p style="color:#475569;">Especialista en ortodoncia invisible y diseño de sonrisa con simulación 3D avanzada.</p>
                 </div>
 
-                <!-- Tarjeta Dr. Nilson Guanipa -->
-                <div class="card doctor-card">
-                    <img src="img/nilson.jpeg" alt="Dr. Nilson Guanipa" class="doctor-img">
-                    <h3>Dr. Nilson Guanipa</h3>
-                    <p>Experto en implantología y cirugía oral. Su precisión quirúrgica y su trato empático garantizan que cada procedimiento, desde una extracción hasta un implante de alta complejidad, sea una experiencia totalmente segura, rápida y confortable.</p>
+                <div class="card" style="flex:1; min-width:300px; text-align:center;">
+                    <img src="img/nilson.jpeg" alt="Dr. Nilson" style="width:120px; height:120px; border-radius:50%; border:4px solid var(--secondary-color); margin-bottom:1rem;">
+                    <h3 style="color:var(--primary-color);">Dr. Nilson Guanipa</h3>
+                    <p style="color:#475569;">Cirujano maxilofacial experto en implantología estratégica e intervenciones indoloras de alta complejidad.</p>
                 </div>
 
-                <!-- Tarjeta Dr. Jose Miquilena -->
-                <div class="card doctor-card">
-                    <img src="img/miquilena.jpg" alt="Dr. Jose Miquilena" class="doctor-img">
-                    <h3>Dr. Jose Miquilena</h3>
-                    <p>Apasionado por la odontología estética y la rehabilitación funcional. El Dr. Miquilena esculpe sonrisas utilizando materiales de alta gama, logrando una combinación perfecta entre salud bucal óptima y una belleza completamente natural.</p>
+                <div class="card" style="flex:1; min-width:300px; text-align:center;">
+                    <img src="img/miquilena.jpg" alt="Dr. Jose" style="width:120px; height:120px; border-radius:50%; border:4px solid var(--secondary-color); margin-bottom:1rem;">
+                    <h3 style="color:var(--primary-color);">Dr. Jose Miquilena</h3>
+                    <p style="color:#475569;">Maestro en rehabilitación funcional y esculpido estético utilizando biomateriales de última generación.</p>
                 </div>
-
             </div>
         </section>
-        <!-- FIN NUEVA SECCIÓN -->
-
     </main>
 
-    <footer>
-        <p><strong>Dr. Kevin Da Costa</strong></p>
-        <p>Ubicacion: Universidad Nacional Experimental de la Fuerza Armada Nacional Bolivariana Extension, Punto Fijo 4123, Falcon.</p>
-        <p>Contacto: 0424-6548189 | <a href="https://wa.me/584246548189" target="_blank">Escribenos al WhatsApp</a></p>
+    <footer style="background: rgba(15, 23, 42, 0.9);">
+        <p>Universidad Nacional Experimental de la Fuerza Armada (UNEFA) Extensión, Punto Fijo 4123, Falcón, Venezuela.</p>
+        <p style="margin-top:10px;">📲 <a href="https://wa.me/584246548189" target="_blank">Atención VIP por WhatsApp: +58 0424-6548189</a></p>
     </footer>
 </body>
 </html>
