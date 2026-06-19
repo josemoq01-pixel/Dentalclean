@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+* { margin: 0; padding: 0; box-sizing: border-box;  font-family: 'Inter', sans-serif; }
 
 :root {
     --primary-color: #073360;
@@ -15,6 +15,7 @@
 body { 
     display: flex; flex-direction: column; min-height: 100vh; 
     background: #f8fafc; color: #1e293b; overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 /* Encabezado animado */
@@ -86,6 +87,8 @@ button:hover, .btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 
 .admin-sidebar { 
     width: 280px; background: rgba(15, 23, 42, 0.95); border-right: 1px solid rgba(255,255,255,0.1);
     display: flex; flex-direction: column; padding: 20px 0; box-shadow: 2px 0 15px rgba(0,0,0,0.5); z-index: 10;
+     /* Define una altura específica para que el contenido desborde */
+    overflow-y: scroll;
 }
 .admin-sidebar .brand { text-align: center; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
 .admin-sidebar .brand img { width: 60px; filter: drop-shadow(0 0 5px var(--secondary-color)); }
@@ -118,8 +121,8 @@ button:hover, .btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 
 .insert-grid input:focus, .insert-grid select:focus { border-color: var(--secondary-color); box-shadow: 0 0 10px rgba(0,210,255,0.3); }
 
 /* Tablas BD */
-.table-wrapper { background: rgba(0,0,0,0.4); border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; animation: fadeIn 0.8s; }
-table { width: 100%; border-collapse: collapse; text-align: left; color: #e2e8f0; }
+.table-wrapper { background: rgba(0,0,0,0.4); border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; animation: fadeIn 0.8s; overflow-y: scroll; overflow-x: scroll;}
+table { width: 100%; border-collapse: collapse; text-align: left; color: #f0e2e2; }
 th { background: rgba(0, 210, 255, 0.1); color: var(--secondary-color); padding: 15px; font-weight: 700; white-space: nowrap; border-bottom: 2px solid rgba(0,210,255,0.2); }
 td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
 tr:hover { background: rgba(255,255,255,0.05); }
