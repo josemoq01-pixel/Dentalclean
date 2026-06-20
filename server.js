@@ -15,83 +15,115 @@ let db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREA
     else console.log(`✅ Base de datos conectada: ${dbPath}`);
 });
 
-// Tasa simulada del BCV actualizada
-const TASA_BCV_ACTUAL = 55.20;
+// Variable global para la tasa del BCV
+let TASA_BCV_ACTUAL = 55.20;
+
+// Función para obtener la tasa del BCV en tiempo real
+async function actualizarTasaBCV() {
+    try {
+        const response = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
+        const data = await response.json();
+        if (data && data.promedio) {
+            TASA_BCV_ACTUAL = data.promedio;
+            console.log(`✅ Tasa BCV actualizada: ${TASA_BCV_ACTUAL} Bs/$`);
+        }
+    } catch (error) {
+        console.error("⚠️ Error obteniendo tasa BCV, usando valor por defecto.", error.message);
+    }
+}
+actualizarTasaBCV();
+setInterval(actualizarTasaBCV, 3600000);
 
 db.serialize(() => {
-    db.run("CREATE TABLE IF NOT EXISTS precios (id_precio INTEGER PRIMARY KEY AUTOINCREMENT, tratamiento TEXT UNIQUE, precio REAL)");
-    
-    db.run(`CREATE TABLE IF NOT EXISTS personal_registrado (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, nombres TEXT, apellidos TEXT, cedula TEXT UNIQUE, 
-        telefono TEXT, direccion TEXT, correo TEXT, cargo TEXT, horario TEXT, anos_servicio INTEGER,
-        dominio_tratamientos TEXT, sueldo_actual REAL, usuario TEXT, password TEXT
+    // 1. Tratamientos
+    db.run(`CREATE TABLE IF NOT EXISTS tratamientos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT UNIQUE, precio_usd REAL
     )`);
     
-    db.run(`CREATE TABLE IF NOT EXISTS reservaciones (
+    // 2. Personal Médico Registrado
+    db.run(`CREATE TABLE IF NOT EXISTS personal_medico_registrado (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, nombres TEXT, apellidos TEXT, cedula TEXT UNIQUE, 
+        telefono TEXT, cargo TEXT, horario TEXT, usuario TEXT UNIQUE, password TEXT
+    )`);
+    
+    // 3. Reservas
+    db.run(`CREATE TABLE IF NOT EXISTS reservas (
         id INTEGER PRIMARY KEY AUTOINCREMENT, primer_nombre TEXT, segundo_nombre TEXT, primer_apellido TEXT, 
         segundo_apellido TEXT, fecha_nacimiento TEXT, cedula TEXT, estatus_salud TEXT, telefono_personal TEXT, 
         telefono_secundario TEXT, correo TEXT, direccion TEXT, discapacidad TEXT, detalle_discapacidad TEXT, 
-        trabajando TEXT, motivo TEXT, conoce_por TEXT, fecha TEXT, hora TEXT, tratamiento TEXT, precio REAL, 
-        odontologo TEXT, enviar_correo TEXT, estado TEXT DEFAULT 'Pendiente'
+        motivo TEXT, conoce_por TEXT, fecha TEXT, hora TEXT, tratamiento TEXT, precio REAL, 
+        odontologo TEXT, estado TEXT DEFAULT 'Pendiente'
     )`);
 
+    // 4. Pagos
     db.run(`CREATE TABLE IF NOT EXISTS pagos (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, reservacion_id INTEGER, cliente_nombre TEXT,
-        monto_bs REAL, monto_usd REAL, referencia TEXT, metodo_pago TEXT, tasa_dolar REAL
+        id INTEGER PRIMARY KEY AUTOINCREMENT, reserva_id INTEGER, monto_usd REAL, monto_bs REAL, 
+        referencia TEXT, metodo_pago TEXT, fecha_pago DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(reserva_id) REFERENCES reservas(id)
     )`);
 
+    // 5. Historial Médico
+    db.run(`CREATE TABLE IF NOT EXISTS historial_medico (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, cedula_paciente TEXT UNIQUE, antecedentes_familiares TEXT, 
+        alergias TEXT, tipo_sangre TEXT, cirugias_previas TEXT
+    )`);
+
+    // 6. Consultas
     db.run(`CREATE TABLE IF NOT EXISTS consultas (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, paciente_id TEXT, cliente_nombre TEXT, tratamiento_realizado TEXT,
-        hora_tratamiento TEXT, fecha_tratamiento TEXT, personal_ayudante TEXT, tiempo_tomado TEXT,
-        instrumentos_productos TEXT, observaciones_higiene TEXT, novedades TEXT, extraccion_diente TEXT,
-        implante_diente TEXT, odontodiagrama TEXT
+        id INTEGER PRIMARY KEY AUTOINCREMENT, reserva_id INTEGER, diagnostico TEXT, 
+        tratamiento_realizado TEXT, observaciones TEXT, fecha_consulta DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(reserva_id) REFERENCES reservas(id)
     )`);
 
-    db.run(`CREATE TABLE IF NOT EXISTS planes_tratamiento (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, paciente_id TEXT, cliente_nombre TEXT, mensaje TEXT, odontograma_path TEXT DEFAULT 'img/odontograma'
+    // 7. Reportes
+    db.run(`CREATE TABLE IF NOT EXISTS reportes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, consulta_id INTEGER, descripcion_reporte TEXT, 
+        indicaciones_paciente TEXT, proxima_cita TEXT,
+        FOREIGN KEY(consulta_id) REFERENCES consultas(id)
     )`);
 
-    db.run("DROP VIEW IF EXISTS reservas_eliminadas");
-    db.run("CREATE VIEW reservas_eliminadas AS SELECT * FROM reservaciones WHERE estado = 'Eliminada'");
+    // --- VISTAS ---
+    db.run("DROP VIEW IF EXISTS vista_citas_pendientes");
+    db.run(`CREATE VIEW vista_citas_pendientes AS 
+            SELECT id, primer_nombre || ' ' || primer_apellido AS paciente, telefono_personal, fecha, hora, tratamiento, odontologo 
+            FROM reservas WHERE estado = 'Pendiente' ORDER BY fecha ASC`);
 
-    db.run("DROP VIEW IF EXISTS analisis_financiero_consultas");
-    db.run(`CREATE VIEW analisis_financiero_consultas AS 
-            SELECT c.id as consulta_id, c.cliente_nombre, c.tratamiento_realizado, p.monto_usd, p.metodo_pago, p.referencia 
-            FROM consultas c LEFT JOIN pagos p ON c.paciente_id = p.reservacion_id`);
+    db.run("DROP VIEW IF EXISTS vista_ingresos_recientes");
+    db.run(`CREATE VIEW vista_ingresos_recientes AS 
+            SELECT p.id, r.primer_nombre || ' ' || r.primer_apellido AS paciente, p.monto_usd, p.metodo_pago, p.fecha_pago 
+            FROM pagos p JOIN reservas r ON p.reserva_id = r.id ORDER BY p.fecha_pago DESC`);
 
-    db.run("DROP VIEW IF EXISTS cantidad_reservas_actuales");
-    db.run(`CREATE VIEW cantidad_reservas_actuales AS 
-            SELECT estado, odontologo, COUNT(*) as total_reservas 
-            FROM reservaciones WHERE estado = 'Pendiente' GROUP BY odontologo`);
+    db.run("DROP VIEW IF EXISTS vista_rendimiento_medicos");
+    db.run(`CREATE VIEW vista_rendimiento_medicos AS 
+            SELECT odontologo, COUNT(*) as citas_atendidas, SUM(precio) as ingresos_generados 
+            FROM reservas WHERE estado = 'Aprobada' OR estado = 'Completada' GROUP BY odontologo`);
 
-    const stmtPrecios = db.prepare("INSERT OR IGNORE INTO precios (tratamiento, precio) VALUES (?, ?)");
-    stmtPrecios.run("Implantología Estratégica", 450.00);
-    stmtPrecios.run("Diseño de Sonrisa", 120.00);
-    stmtPrecios.run("Ortodoncia", 800.00);
-    stmtPrecios.run("Odontología Integral", 45.00);
-    stmtPrecios.run("Aclaramiento Dental", 60.00);
-    stmtPrecios.run("Limpieza Dental", 25.00);
-    stmtPrecios.finalize();
-
-    const stmtPers = db.prepare(`INSERT OR IGNORE INTO personal_registrado 
-        (nombres, apellidos, cedula, telefono, direccion, correo, cargo, horario, anos_servicio, dominio_tratamientos, sueldo_actual, usuario, password) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
-    stmtPers.run("Kevin", "Da Costa", "V-11111111", "0412-1111111", "Punto Fijo", "kevin@dentalclean.com", "Odontólogo", "06:00 AM - 12:00 PM", 5, "Ortodoncia", 1200.00, "kevin1111", "1234");
-    stmtPers.run("Nilson", "Guanipa", "V-22222222", "0412-2222222", "Punto Fijo", "nilson@dentalclean.com", "Odontólogo", "12:00 PM - 06:00 PM", 4, "Odontología Integral", 1100.00, "nilson2222", "1234");
-    stmtPers.run("Jose", "Miquilena", "V-33333333", "0412-3333333", "Punto Fijo", "josem@dentalclean.com", "Odontólogo", "06:00 AM - 06:00 PM", 6, "Aclaramiento Dental", 1300.00, "jose3333", "1234");
-    stmtPers.run("Jose", "Ordonez", "V-44444444", "0412-4444444", "Punto Fijo", "joseo@dentalclean.com", "Ayudante", "06:00 AM - 01:00 PM", 2, "Asistencia General", 450.00, "jose4444", "1234");
-    stmtPers.run("Anthony", "Arnaez", "V-55555555", "0412-5555555", "Punto Fijo", "anthony@dentalclean.com", "Ayudante", "01:00 PM - 06:00 PM", 1, "Limpieza Instrumental", 400.00, "anthony5555", "1234");
-    stmtPers.finalize();
+    // Datos por defecto
+    const stmtTrat = db.prepare("INSERT OR IGNORE INTO tratamientos (nombre, precio_usd) VALUES (?, ?)");
+    stmtTrat.run("Implantología Estratégica", 450.00);
+    stmtTrat.run("Diseño de Sonrisa", 120.00);
+    stmtTrat.run("Ortodoncia", 800.00);
+    stmtTrat.run("Odontología Integral", 45.00);
+    stmtTrat.run("Limpieza Dental", 25.00);
+    stmtTrat.finalize();
 });
 
 app.get('/api/bcv', (req, res) => res.json({ tasa: TASA_BCV_ACTUAL }));
 
+// Endpoints Genéricos CRUD
 app.get('/api/data/:tabla', (req, res) => {
-    const permitidas = ['reservaciones', 'personal_registrado', 'pagos', 'consultas', 'planes_tratamiento', 'precios', 'reservas_eliminadas', 'analisis_financiero_consultas', 'cantidad_reservas_actuales'];
+    const permitidas = ['reservas', 'personal_medico_registrado', 'pagos', 'historial_medico', 'consultas', 'reportes', 'tratamientos', 'vista_citas_pendientes', 'vista_ingresos_recientes', 'vista_rendimiento_medicos'];
     if (!permitidas.includes(req.params.tabla)) return res.status(400).send("Tabla inválida");
     db.all(`SELECT * FROM ${req.params.tabla}`, [], (err, rows) => {
         if (err) return res.status(500).send(err.message);
         res.json(rows);
+    });
+});
+
+app.get('/api/reservas/:id', (req, res) => {
+    db.get("SELECT * FROM reservas WHERE id = ?", [req.params.id], (err, row) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(row || {});
     });
 });
 
@@ -105,75 +137,65 @@ app.post('/api/data/:tabla', (req, res) => {
     });
 });
 
-app.put('/api/data/:tabla/:id', (req, res) => {
-    const campos = Object.keys(req.body).map(c => `${c} = ?`).join(', ');
-    const valores = Object.values(req.body);
-    valores.push(req.params.id);
-    db.run(`UPDATE ${req.params.tabla} SET ${campos} WHERE id = ?`, valores, function(err) {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ success: true });
-    });
-});
-
 app.delete('/api/data/:tabla/:id', (req, res) => {
-    if (req.params.tabla === 'reservaciones') {
-        db.run(`UPDATE reservaciones SET estado = 'Eliminada' WHERE id = ?`, [req.params.id], function(err) {
-            if (err) return res.status(500).json({ error: err.message });
-            res.json({ success: true });
-        });
-    } else {
-        db.run(`DELETE FROM ${req.params.tabla} WHERE id = ?`, [req.params.id], function(err) {
-            if (err) return res.status(500).json({ error: err.message });
-            res.json({ success: true });
-        });
-    }
-});
-
-app.put('/api/reservaciones/:id/aprobar', (req, res) => {
-    db.run("UPDATE reservaciones SET estado = 'Aprobada' WHERE id = ?", [req.params.id], function(err) {
+    db.run(`DELETE FROM ${req.params.tabla} WHERE id = ?`, [req.params.id], function(err) {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ success: true });
     });
 });
 
+// Endpoint Público para Reservas
 app.post('/reservar', (req, res) => {
     const d = req.body;
-    db.get(`SELECT precio FROM precios WHERE tratamiento = ?`, [(d.tratamiento || "").trim()], (err, info) => {
-        const precioVal = info ? info.precio : 0;
-        db.run(`INSERT INTO reservaciones (
+    db.get(`SELECT precio_usd FROM tratamientos WHERE nombre = ?`, [(d.tratamiento || "").trim()], (err, info) => {
+        const precioVal = info ? info.precio_usd : 0;
+        db.run(`INSERT INTO reservas (
             primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, fecha_nacimiento,
             cedula, estatus_salud, telefono_personal, telefono_secundario, correo, direccion,
-            discapacidad, detalle_discapacidad, trabajando, motivo, conoce_por, fecha, hora,
-            tratamiento, precio, odontologo, enviar_correo, estado
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pendiente')`, 
+            discapacidad, detalle_discapacidad, motivo, conoce_por, fecha, hora,
+            tratamiento, precio, odontologo, estado
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pendiente')`, 
         [
             d.primer_nombre, d.segundo_nombre, d.primer_apellido, d.segundo_apellido, d.fecha_nacimiento,
             d.cedula, d.estatus_salud, d.telefono_personal, d.telefono_secundario || 'N/A', d.correo, d.direccion,
-            d.discapacidad, d.detalle_discapacidad || 'Ninguna', d.trabajando, d.motivo, d.conoce_por,
-            d.fecha, d.hora, (d.tratamiento || "").trim(), precioVal, d.odontologo, d.enviar_correo || 'No'
+            d.discapacidad, d.detalle_discapacidad || 'Ninguna', d.motivo, d.conoce_por,
+            d.fecha, d.hora, (d.tratamiento || "").trim(), precioVal, d.odontologo
         ], function(err) {
             if (err) return res.status(500).send("Error procesando reserva: " + err.message);
-            res.send(`<script>alert("✅ Cita registrada exitosamente. Nos comunicaremos contigo pronto."); window.location.href = "/reservacion.html";</script>`);
+            res.send(`<script>alert("✅ Cita registrada exitosamente."); window.location.href = "/reservacion.html";</script>`);
         });
     });
 });
 
-app.post('/api/login', (req, res) => {
-    db.get("SELECT * FROM personal_registrado WHERE usuario = ? AND password = ?", [req.body.usuario, req.body.password], (err, row) => {
-        if (row) res.json({ success: true, nombre: `${row.nombres} ${row.apellidos}` });
-        else res.status(401).json({ success: false, error: "Acceso denegado corporativo." });
-    });
-});
-
+// --- NUEVO: ENDPOINT DE REGISTRO DE PERSONAL ---
 app.post('/api/registro', (req, res) => {
-    const d = req.body;
-    const nuevoUsuario = d.nombres.split(' ')[0].toLowerCase() + d.cedula.slice(-4);
-    db.run(`INSERT INTO personal_registrado (nombres, apellidos, cedula, telefono, cargo, horario, usuario, password) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, 
-        [d.nombres, d.apellidos, d.cedula, d.telefono, d.cargo, d.horario, nuevoUsuario, d.password], function(err) {
-            if (err) return res.status(500).json({ success: false, error: err.message });
-            res.json({ success: true, usuario: nuevoUsuario });
-        });
+    const { nombres, apellidos, cedula, telefono, cargo, horario, password } = req.body;
+    
+    // Generar nombre de usuario automáticamente (ej: jdoe123)
+    const inicial = nombres.trim().charAt(0).toLowerCase();
+    const primerApellido = apellidos.trim().split(' ')[0].toLowerCase();
+    const ultimosNumeros = cedula.toString().slice(-3);
+    const usuarioGenerado = `${inicial}${primerApellido}${ultimosNumeros}`;
+
+    db.run(`INSERT INTO personal_medico_registrado (
+        nombres, apellidos, cedula, telefono, cargo, horario, usuario, password
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, 
+    [nombres, apellidos, cedula, telefono, cargo, horario, usuarioGenerado, password], 
+    function(err) {
+        if (err) {
+            // Error típico si la cédula o usuario ya existen (UNIQUE constraint)
+            return res.status(400).json({ success: false, error: "El personal ya se encuentra registrado o hubo un error en la BD." });
+        }
+        res.json({ success: true, usuario: usuarioGenerado });
+    });
 });
 
-app.listen(port, () => console.log(`Servidor Dentalclean en http://localhost:${port}`));
+// Endpoint de Inicio de Sesión
+app.post('/api/login', (req, res) => {
+    db.get("SELECT * FROM personal_medico_registrado WHERE usuario = ? AND password = ?", [req.body.usuario, req.body.password], (err, row) => {
+        if (row) res.json({ success: true, nombre: `${row.nombres} ${row.apellidos}` });
+        else res.status(401).json({ success: false, error: "Credenciales inválidas." });
+    });
+});
+
+app.listen(port, () => console.log(`🚀 Servidor Dentalclean en http://localhost:${port}`));

@@ -14,119 +14,90 @@
             <ul>
                 <li><a href="inicio.html">Inicio</a></li>
                 <li><a href="informacion.html">Información</a></li>
-                <li><a href="Precios y servicios.html">Precios y Servicios</a></li>
                 <li><a href="reservacion.html" class="active">Reservación</a></li>
                 <li><a href="login.html" style="border: 2px solid var(--secondary-color); padding: 5px 15px; border-radius: 8px;">Panel Médico</a></li>
             </ul>
         </nav>
     </header>
 
-    <main class="main-content" style="margin-top: 120px;">
+    <main class="main-content">
         <div class="form-container">
             <h2>Agenda tu Cita Especializada</h2>
-            <p style="text-align:center; color:#64748b; margin-bottom: 30px;">Completa el formulario interactivo para coordinar tu atención odontológica.</p>
+            <p style="text-align:center; color:#64748b; margin-bottom: 30px;">Completa el formulario para coordinar tu atención.</p>
             
-            <form id="formReserva" action="/reservar" method="POST" novalidate>
+            <form id="formReserva" action="/reservar" method="POST">
                 <div class="form-grid">
-                    <div class="form-group"><label>Primer Nombre *</label><input type="text" name="primer_nombre" id="primer_nombre" required></div>
-                    <div class="form-group"><label>Segundo Nombre</label><input type="text" name="segundo_nombre" id="segundo_nombre"></div>
-                    <div class="form-group"><label>Primer Apellido *</label><input type="text" name="primer_apellido" id="primer_apellido" required></div>
-                    <div class="form-group"><label>Segundo Apellido *</label><input type="text" name="segundo_apellido" id="segundo_apellido" required></div>
-                    <div class="form-group"><label>Fecha de Nacimiento *</label><input type="date" name="fecha_nacimiento" id="fecha_nacimiento" required></div>
-                    <div class="form-group"><label>Cédula de Identidad *</label><input type="text" name="cedula" id="cedula" required placeholder="V-00000000"></div>
+                    <div class="form-group"><label>Primer Nombre *</label><input type="text" name="primer_nombre" required></div>
+                    <div class="form-group"><label>Segundo Nombre</label><input type="text" name="segundo_nombre"></div>
+                    <div class="form-group"><label>Primer Apellido *</label><input type="text" name="primer_apellido" required></div>
+                    <div class="form-group"><label>Segundo Apellido *</label><input type="text" name="segundo_apellido" required></div>
+                    <div class="form-group"><label>Fecha Nacimiento *</label><input type="date" name="fecha_nacimiento" required></div>
+                    <div class="form-group"><label>Cédula *</label><input type="text" name="cedula" required placeholder="V-00000000"></div>
                     
                     <div class="form-group full-width">
                         <label>Estatus de Salud Actual *</label>
-                        <select name="estatus_salud" id="estatus_salud" required>
+                        <select name="estatus_salud" required>
                             <option value="">Seleccione su estado actual...</option>
-                            <option value="Me encuentro en perfecto estado de salud">Me encuentro en perfecto estado de salud</option>
-                            <option value="Tengo una afección leve (Alergias, asma controlada)">Tengo una afección leve (Alergias, asma controlada)</option>
-                            <option value="Padezco una enfermedad crónica (Hipertensión, Diabetes)">Padezco una enfermedad crónica (Hipertensión, Diabetes)</option>
-                            <option value="Me encuentro mal de salud (Dolor agudo, infección)">Me encuentro mal de salud (Dolor agudo, infección)</option>
-                            <option value="En tratamiento médico o tomando medicamentos actualmente">En tratamiento médico o tomando medicamentos actualmente</option>
+                            <option value="Sano">Me encuentro en perfecto estado de salud</option>
+                            <option value="Afeccion Leve">Tengo una afección leve</option>
+                            <option value="Enfermedad Cronica">Padezco una enfermedad crónica</option>
+                            <option value="Mal estado">Me encuentro mal de salud (Dolor agudo)</option>
                         </select>
                     </div>
 
-                    <div class="form-group"><label>Teléfono Personal *</label><input type="tel" name="telefono_personal" id="telefono_personal" required></div>
-                    <div class="form-group"><label>Teléfono Secundario</label><input type="tel" name="telefono_secundario" id="telefono_secundario"></div>
-                    <div class="form-group"><label>Correo Electrónico *</label><input type="email" name="correo" id="correo" required></div>
-                    <div class="form-group full-width"><label>Dirección de Residencia *</label><input type="text" name="direccion" id="direccion" required></div>
+                    <div class="form-group"><label>Teléfono Personal *</label><input type="tel" name="telefono_personal" required></div>
+                    <div class="form-group"><label>Teléfono Secundario</label><input type="tel" name="telefono_secundario"></div>
+                    <div class="form-group"><label>Correo Electrónico *</label><input type="email" name="correo" required></div>
+                    <div class="form-group full-width"><label>Dirección de Residencia *</label><input type="text" name="direccion" required></div>
                     
                     <div class="form-group">
-                        <label>¿Posee alguna discapacidad? *</label>
-                        <select name="discapacidad" id="discapacidad" onchange="toggleDiscapacidad(this.value)">
+                        <label>¿Posee discapacidad? *</label>
+                        <select name="discapacidad" onchange="document.getElementById('det_disc').style.display = this.value==='Si' ? 'block' : 'none'">
                             <option value="No">No</option><option value="Si">Sí</option>
                         </select>
                     </div>
-                    <div class="form-group" id="wrapper-discapacidad" style="display:none;">
-                        <label>Indique la discapacidad *</label><input type="text" name="detalle_discapacidad" id="detalle_discapacidad">
+                    <div class="form-group" id="det_disc" style="display:none;">
+                        <label>Indique la discapacidad</label><input type="text" name="detalle_discapacidad">
                     </div>
 
-                    <div class="form-group"><label>¿Se encuentra trabajando? *</label><select name="trabajando" id="trabajando"><option value="No">No</option><option value="Si">Sí</option></select></div>
-                    <div class="form-group full-width"><label>Motivo de la cita *</label><input type="text" name="motivo" id="motivo" required placeholder="Ej: Dolor de muela, chequeo general..."></div>
+                    <div class="form-group full-width"><label>Motivo de la cita *</label><input type="text" name="motivo" required></div>
 
                     <div class="form-group full-width">
-                        <label>¿Por dónde o quién nos conoce? *</label>
-                        <select name="conoce_por" id="conoce_por" required>
+                        <label>¿Por dónde nos conoce? *</label>
+                        <select name="conoce_por" required>
                             <option value="">Seleccione una opción...</option>
-                            <option value="Recomendación de un amigo o familiar">Recomendación de un amigo o familiar</option>
-                            <option value="Pasé por enfrente / Vi el local">Pasé por enfrente / Vi el local</option>
-                            <option value="Redes sociales (Instagram, TikTok)">Redes sociales (Instagram, TikTok)</option>
-                            <option value="Google Maps / Reseñas en Google">Google Maps / Reseñas en Google</option>
-                            <option value="Búsqueda en internet">Búsqueda en internet</option>
-                            <option value="Publicidad local (radio, vallas, volantes)">Publicidad local (radio, vallas, volantes)</option>
-                            <option value="Evento o feria local">Evento o feria local</option>
+                            <option value="Recomendacion">Recomendación</option>
+                            <option value="Redes Sociales">Redes Sociales</option>
+                            <option value="Google Maps">Google Maps</option>
+                            <option value="Otro">Otro</option>
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label>Fecha para reservar *</label>
-                        <input type="date" name="fecha" id="fecha" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Horario Disponible (6:35 AM a 6:35 PM) *</label>
-                        <input type="time" name="hora" id="hora" required>
-                    </div>
+                    <div class="form-group"><label>Fecha *</label><input type="date" name="fecha" id="fecha" required></div>
+                    <div class="form-group"><label>Hora (06:35 AM a 06:35 PM) *</label><input type="time" name="hora" id="hora" required></div>
 
                     <div class="form-group">
-                        <label>Tratamiento a reservar *</label>
-                        <select name="tratamiento" id="tratamiento" required>
+                        <label>Tratamiento *</label>
+                        <select name="tratamiento" required>
                             <option value="">Seleccione...</option>
-                            <option value="Implantología Estratégica">Implantología Estratégica ($450)</option>
-                            <option value="Diseño de Sonrisa">Diseño de Sonrisa ($120)</option>
-                            <option value="Ortodoncia">Ortodoncia ($800)</option>
-                            <option value="Odontología Integral">Odontología Integral ($45)</option>
-                            <option value="Aclaramiento Dental">Aclaramiento Dental ($60)</option>
-                            <option value="Limpieza Dental">Limpieza Dental ($25)</option>
+                            <option value="Limpieza Dental">Limpieza Dental</option>
+                            <option value="Ortodoncia">Ortodoncia</option>
+                            <option value="Diseño de Sonrisa">Diseño de Sonrisa</option>
+                            <option value="Implantología Estratégica">Implantología Estratégica</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Especialista de Preferencia *</label>
-                        <select name="odontologo" id="odontologo" required>
+                        <label>Especialista *</label>
+                        <select name="odontologo" required>
                             <option value="Dr. Kevin Da Costa">Dr. Kevin Da Costa</option>
                             <option value="Dr. Nilson Guanipa">Dr. Nilson Guanipa</option>
-                            <option value="Dr. Jose Miquilena">Dr. Jose Miquilena</option>
                         </select>
                     </div>
                 </div>
-
-                <div style="background: rgba(10, 147, 150, 0.1); padding: 15px; border-radius: 12px; margin-top: 20px; display: flex; align-items: center; gap: 10px;">
-                    <input type="checkbox" name="enviar_correo" id="enviar_correo" value="Si" checked style="width: 20px; height: 20px; cursor:pointer;">
-                    <label for="enviar_correo" style="font-weight: 600; cursor:pointer; color: var(--primary-color);">Deseo recibir confirmación automatizada de los datos en mi correo electrónico.</label>
-                </div>
-
-                <button type="submit" class="btn" style="width: 100%; margin-top: 25px; padding: 1.2rem; font-size: 1.2rem;">Confirmar Cita Médica</button>
+                <button type="submit" class="btn" style="width: 100%; margin-top: 25px;">Confirmar Cita Médica</button>
             </form>
         </div>
     </main>
     <script src="app.js"></script>
-    <script>
-        function toggleDiscapacidad(val) {
-            const wrap = document.getElementById('wrapper-discapacidad');
-            const inp = document.getElementById('detalle_discapacidad');
-            if(val === 'Si') { wrap.style.display = 'block'; inp.required = true; } 
-            else { wrap.style.display = 'none'; inp.required = false; inp.value = ''; }
-        }
-    </script>
 </body>
 </html>
