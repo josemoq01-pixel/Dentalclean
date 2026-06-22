@@ -2,7 +2,7 @@
    SISTEMA CORE DENTALCLEAN - HOJA DE ESTILOS GENERAL (styles.css)
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght=300;400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
 
 /* ---- 1. VARIABLES Y RESET GENERAL ---- */
 :root {
@@ -106,7 +106,7 @@ nav ul li a.active {
 /* ---- 4. ESTRUCTURA Y COMPONENTES PÚBLICOS ---- */
 .main-content {
     flex: 1;
-    margin-top: 100px; /* Evita que el header fijo tape el contenido */
+    margin-top: 100px; /* Protege el contenido para que no lo tape el header fijo */
     padding: 2rem 5%;
     width: 100%;
     max-width: 1200px;
@@ -114,7 +114,6 @@ nav ul li a.active {
     margin-right: auto;
 }
 
-/* Sección Hero (Inicio) */
 .hero {
     text-align: center;
     padding: 5rem 1rem;
@@ -158,7 +157,6 @@ nav ul li a.active {
     color: white;
 }
 
-/* Tarjetas Informativas y de Servicios */
 .card-container {
     display: flex;
     flex-wrap: wrap;
@@ -248,7 +246,6 @@ nav ul li a.active {
     background: rgba(15, 23, 42, 0.65);
     border: 1px solid rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     border-radius: 20px;
     padding: 40px;
     width: 100%;
@@ -290,7 +287,7 @@ nav ul li a.active {
     overflow: hidden;
 }
 
-/* Sidebar del Administrador */
+/* Sidebar del Administrador (Adaptable a pantalla con scroll interno) */
 .admin-sidebar {
     width: 280px;
     background: var(--bg-dark);
@@ -300,6 +297,8 @@ nav ul li a.active {
     padding: 25px;
     border-right: 1px solid rgba(255, 255, 255, 0.05);
     flex-shrink: 0;
+    overflow-y: auto;
+    max-height: 100vh;
 }
 
 .admin-sidebar .brand {
@@ -374,7 +373,6 @@ nav ul li a.active {
     font-weight: 800;
 }
 
-/* Tag de Tasa de Cambio BCV */
 .bcv-tag {
     background: #e2e8f0;
     color: var(--primary-color);
@@ -426,7 +424,36 @@ nav ul li a.active {
     background-color: #f8fafc;
 }
 
-/* ---- 8. SISTEMA DE VENTANAS MODALES (FORMULARIOS CORE) ---- */
+/* ---- 8. TABLA PAGOS: FILA APROBADA (VERDE) ---- */
+.fila-aprobada {
+    background-color: rgba(16, 185, 129, 0.12) !important;
+    border-left: 4px solid #10b981;
+}
+
+/* Botones de acción dentro de las tablas */
+.btn-action {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: transparent;
+    transition: all 0.2s ease;
+}
+.btn-action:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+.btn-delete {
+    color: #ef4444 !important;
+    border-color: #ef4444 !important;
+}
+.btn-delete:hover {
+    background: #ef4444 !important;
+    color: white !important;
+}
+
+/* ---- 9. SISTEMA DE VENTANAS MODALES (FORMULARIOS CORE) ---- */
 .modal {
     display: none;
     position: fixed;
@@ -449,11 +476,13 @@ nav ul li a.active {
     padding: 35px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     width: 90%;
-    max-width: 600px;
+    max-width: 650px;
     border-radius: 20px;
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
     position: relative;
     animation: fadeInScale 0.4s ease-out;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .modal-content h3 {
@@ -502,23 +531,6 @@ nav ul li a.active {
     color: var(--accent-color);
 }
 
-/* ---- 9. CONTROL DE ERRORES Y VALIDACIONES ---- */
-.input-error {
-    border: 2px solid var(--accent-color) !important;
-    background: rgba(230, 57, 70, 0.05) !important;
-    box-shadow: 0 0 10px rgba(230, 57, 70, 0.3) !important;
-}
-
-.error-text {
-    color: var(--accent-color);
-    font-size: 0.85rem;
-    font-weight: 700;
-    display: block;
-    margin-top: -10px;
-    margin-bottom: 15px;
-    animation: shake 0.3s;
-}
-
 /* ---- 10. PIE DE PÁGINA (FOOTER) ---- */
 footer {
     background: rgba(15, 23, 42, 0.95);
@@ -543,20 +555,9 @@ footer p {
     to { opacity: 1; }
 }
 
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-30px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
 @keyframes fadeInScale {
     from { opacity: 0; transform: scale(0.95); }
     to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-6px); }
-    75% { transform: translateX(6px); }
 }
 
 /* ---- 12. DISEÑO RESPONSIVO (MÓVILES Y TABLETS) ---- */
