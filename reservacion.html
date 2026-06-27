@@ -7,15 +7,15 @@
     <link rel="icon" href="img/Logo.png">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body style="background: url('https://images.unsplash.com/photo-1598256989800-fea5c0ebbcbc?q=80&w=2070&auto=format&fit=crop') center/cover fixed;">
+<body class="bg-inicio">
     <header>
         <h1><img src="img/Logo.png" alt="Logo">Dentalclean</h1>
         <nav>
             <ul>
                 <li><a href="inicio.html">Inicio</a></li>
                 <li><a href="informacion.html">Información</a></li>
+                <li><a href="Precios y servicios.html">Servicios y Precios</a></li>
                 <li><a href="reservacion.html" class="active">Reservación</a></li>
-                <li><a href="login.html" style="border: 2px solid var(--secondary-color); padding: 5px 15px; border-radius: 8px;">Panel Médico</a></li>
             </ul>
         </nav>
     </header>
@@ -27,12 +27,33 @@
             
             <form id="formReserva" action="/reservar" method="POST">
                 <div class="form-grid">
-                    <div class="form-group"><label>Primer Nombre *</label><input type="text" name="primer_nombre" required></div>
-                    <div class="form-group"><label>Segundo Nombre</label><input type="text" name="segundo_nombre"></div>
-                    <div class="form-group"><label>Primer Apellido *</label><input type="text" name="primer_apellido" required></div>
-                    <div class="form-group"><label>Segundo Apellido *</label><input type="text" name="segundo_apellido" required></div>
-                    <div class="form-group"><label>Fecha Nacimiento *</label><input type="date" name="fecha_nacimiento" required></div>
-                    <div class="form-group"><label>Cédula *</label><input type="text" name="cedula" required placeholder="V-00000000"></div>
+                    <div class="form-group">
+                        <label>Primer Nombre *</label>
+                        <input type="text" name="primer_nombre" minlength="2" maxlength="15" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+" placeholder="Ej: Jose" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]/g, '')" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Segundo Nombre</label>
+                        <input type="text" name="segundo_nombre" minlength="2" maxlength="15" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+" placeholder="Ej: Alberto" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]/g, '')" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Primer Apellido *</label>
+                        <input type="text" name="primer_apellido" minlength="2" maxlength="20" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+" placeholder="Ej: Ordonez" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]/g, '')" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Segundo Apellido *</label>
+                        <input type="text" name="segundo_apellido" minlength="2" maxlength="20" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+" placeholder="Ej: Gonzalez" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]/g, '')" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Fecha Nacimiento *</label>
+                        <input type="date" name="fecha_nacimiento" id="fecha_naci" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Cédula *</label>
+                        <input type="text" inputmode="numeric" name="cedula" placeholder="Ej: 31397398" minlength="7" maxlength="8" pattern="[0-9]{7,8}" oninput="this.value = this.value.replace(/\D/g, '')" required>
+                    </div>
                     
                     <div class="form-group full-width">
                         <label>Estatus de Salud Actual *</label>
@@ -44,10 +65,24 @@
                         </select>
                     </div>
 
-                    <div class="form-group"><label>Teléfono Personal *</label><input type="tel" name="telefono_personal" required></div>
-                    <div class="form-group"><label>Teléfono Secundario</label><input type="tel" name="telefono_secundario"></div>
-                    <div class="form-group"><label>Correo Electrónico *</label><input type="email" name="correo" required></div>
-                    <div class="form-group full-width"><label>Dirección de Residencia *</label><input type="text" name="direccion" required></div>
+                    <div class="form-group">
+                        <label>Teléfono Personal *</label>
+                        <input type="tel" name="telefono_personal" placeholder="Ej: 04241234567" minlength="11" maxlength="11" pattern="^0[0-9]{10}$" oninput="this.value = this.value.replace(/\D/g, '')" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono Secundario</label>
+                        <input type="tel" name="telefono_secundario" placeholder="Ej: 04127654321" minlength="11" maxlength="11" pattern="^0[0-9]{10}$" oninput="this.value = this.value.replace(/\D/g, '')">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Correo Electrónico *</label>
+                        <input type="email" name="correo" maxlength="60" placeholder="usuario@correo.com" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Dirección de Residencia *</label>
+                        <input type="text" name="direccion" minlength="5" maxlength="120" placeholder="Ciudad, Sector, Calle/Avenida, Casa/Apto" oninput="this.value = this.value.replace(/['\<>]/g, '')" required>
+                    </div>
                     
                     <div class="form-group">
                         <label>¿Posee discapacidad? *</label>
@@ -56,10 +91,14 @@
                         </select>
                     </div>
                     <div class="form-group" id="det_disc" style="display:none;">
-                        <label>Indique la discapacidad</label><input type="text" name="detalle_discapacidad">
+                        <label>Indique la discapacidad</label>
+                        <input type="text" name="detalle_discapacidad" maxlength="60" oninput="this.value = this.value.replace(/['\<>]/g, '')">
                     </div>
 
-                    <div class="form-group full-width"><label>Motivo de la cita *</label><input type="text" name="motivo" required></div>
+                    <div class="form-group full-width">
+                        <label>Motivo de la cita *</label>
+                        <input type="text" name="motivo" minlength="5" maxlength="100" placeholder="Ej: Control de ortodoncia / Dolor agudo" oninput="this.value = this.value.replace(/['\<>]/g, '')" required>
+                    </div>
 
                     <div class="form-group full-width">
                         <label>¿Por dónde nos conoce? *</label>
@@ -70,8 +109,14 @@
                         </select>
                     </div>
 
-                    <div class="form-group"><label>Fecha *</label><input type="date" name="fecha" id="fecha" required></div>
-                    <div class="form-group"><label>Hora (06:35 AM a 06:35 PM) *</label><input type="time" name="hora" id="hora" required></div>
+                    <div class="form-group">
+                        <label>Fecha *</label>
+                        <input type="date" name="fecha" id="fecha" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Hora (06:35 AM a 06:35 PM) *</label>
+                        <input type="time" name="hora" id="hora" min="06:35" max="18:35" required>
+                    </div>
 
                     <div class="form-group">
                         <label>Tratamiento *</label>
@@ -98,6 +143,30 @@
             </form>
         </div>
     </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Lógica para Fecha de Nacimiento (Alguien no puede tener 150 años, ni haber nacido mañana)
+            const fnac = document.getElementById('fecha_naci');
+            if(fnac) {
+                const hoy = new Date();
+                // Máximo admitido: Alguien de 3 años de edad
+                const maxDate = new Date(hoy.getFullYear() - 3, hoy.getMonth(), hoy.getDate()).toISOString().split('T')[0];
+                // Mínimo admitido: Alguien de 100 años de edad
+                const minDate = new Date(hoy.getFullYear() - 100, hoy.getMonth(), hoy.getDate()).toISOString().split('T')[0];
+                fnac.setAttribute('max', maxDate);
+                fnac.setAttribute('min', minDate);
+            }
+
+            // 2. Lógica para la Cita (Bloquea físicamente en el calendario los días del pasado)
+            const fcita = document.getElementById('fecha');
+            if(fcita) {
+                const todayISO = new Date().toISOString().split('T')[0];
+                fcita.setAttribute('min', todayISO);
+            }
+        });
+    </script>
+
     <script src="app.js"></script>
 </body>
 </html>

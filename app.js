@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 let tablaActiva = 'reservas';
-let tasaGlobalBCV = 55.20;
+let tasaGlobalBCV = 617.64;
 let idEdicionActual = null;
 
 if (window.location.pathname.includes('BD.html')) {
@@ -101,27 +101,35 @@ async function cargarTabla(tabla) {
 
                 Object.entries(fila).forEach(([col, val]) => {
                     let td = document.createElement('td');
-                    if(col.includes('monto') || col.includes('precio')) td.innerText = `${val !== null ? val : 0} $`;
-                    else td.innerText = val !== null && val !== "" ? val : 'N/A';
+                    // Formateador de moneda para Bolívares y Dólares
+                    if (col.includes('precio_bs') || col.includes('monto_bs') || col.includes('rentabilidad_bs')) {
+                        td.innerText = new Intl.NumberFormat('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val || 0) + ' Bs';
+                    } else if(col.includes('monto') || col.includes('precio') || col.includes('rentabilidad_usd')) {
+                        td.innerText = `${val !== null ? val : 0} $`;
+                    } else {
+                        td.innerText = val !== null && val !== "" ? val : 'N/A';
+                    }
                     tr.appendChild(td);
                 });
 
                 if (!sinAcciones.includes(tabla)) {
                     let tdAcciones = document.createElement('td');
-                    tdAcciones.style.display = "flex"; tdAcciones.style.gap = "5px";
+                    let accionesHTML = `<div class="acciones-wrapper">`;
 
                     if (tabla === 'pagos') {
                         let esAprobado = fila.estado_pago === 'Aprobado';
                         let txtBtn = esAprobado ? '❌ Desaprobar' : '✅ Aprobar';
                         let colorBtn = esAprobado ? '#f59e0b' : '#10b981';
-                        tdAcciones.innerHTML += `<button class="btn-action" style="border-color:${colorBtn}; color:${colorBtn};" onclick="alternarAprobacionPago('${fila.id}', '${esAprobado ? 'Pendiente' : 'Aprobado'}')">${txtBtn}</button>`;
+                        accionesHTML += `<button class="btn-action" style="border-color:${colorBtn}; color:${colorBtn};" onclick="alternarAprobacionPago('${fila.id}', '${esAprobado ? 'Pendiente' : 'Aprobado'}')">${txtBtn}</button>`;
                     }
 
-                    // Botones de Editar y Borrar
-                    tdAcciones.innerHTML += `
+                    // Botones de Editar y Borrar alineados
+                    accionesHTML += `
                         <button class="btn-action" style="border-color:#00d2ff; color:#00d2ff;" onclick="editarRegistro('${fila.id}')">✏️ Editar</button>
                         <button class="btn-action btn-delete" onclick="eliminarRegistro('${fila.id}')">🗑️ Borrar</button>
-                    `;
+                    </div>`;
+                    
+                    tdAcciones.innerHTML = accionesHTML;
                     tr.appendChild(tdAcciones);
                 }
                 body.appendChild(tr);
@@ -132,7 +140,6 @@ async function cargarTabla(tabla) {
     } catch (e) { console.error(e); }
 }
 
-// Alternar estado de pago y recargar
 async function alternarAprobacionPago(id, nuevoEstado) {
     await fetch(`/api/pagos/toggle/${id}`, {
         method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ estado: nuevoEstado })
@@ -140,7 +147,7 @@ async function alternarAprobacionPago(id, nuevoEstado) {
     cargarTabla('pagos');
 }
 
-// --- SUPER FORMULARIOS DINÁMICOS ---
+// --- SUPER FORMULARIOS DINÁMICOS CON RESTRICCIONES ---
 async function abrirModal(modo = 'nuevo', id = null) {
     idEdicionActual = id;
     const modal = document.getElementById('modal-form');
@@ -158,32 +165,32 @@ async function abrirModal(modo = 'nuevo', id = null) {
     if (tablaActiva === 'reservas') {
         container.innerHTML = `
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <input type="text" id="r_pnom" placeholder="Primer Nombre *" value="${obj.primer_nombre || ''}" required>
-                <input type="text" id="r_snom" placeholder="Segundo Nombre" value="${obj.segundo_nombre || ''}">
-                <input type="text" id="r_papel" placeholder="Primer Apellido *" value="${obj.primer_apellido || ''}" required>
-                <input type="text" id="r_sapel" placeholder="Segundo Apellido *" value="${obj.segundo_apellido || ''}" required>
+                <input type="text" id="r_pnom" placeholder="Primer Nombre *" minlength="2" maxlength="15" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]/g, '')" value="${obj.primer_nombre || ''}" required>
+                <input type="text" id="r_snom" placeholder="Segundo Nombre" minlength="2" maxlength="15" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]/g, '')" value="${obj.segundo_nombre || ''}">
+                <input type="text" id="r_papel" placeholder="Primer Apellido *" minlength="2" maxlength="20" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]/g, '')" value="${obj.primer_apellido || ''}" required>
+                <input type="text" id="r_sapel" placeholder="Segundo Apellido *" minlength="2" maxlength="20" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]/g, '')" value="${obj.segundo_apellido || ''}" required>
                 <input type="date" id="r_fnac" placeholder="Fecha Nacimiento" value="${obj.fecha_nacimiento || ''}" required>
-                <input type="text" id="r_ced" placeholder="Cédula *" value="${obj.cedula || ''}" required>
+                <input type="text" id="r_ced" placeholder="Cédula *" inputmode="numeric" minlength="7" maxlength="8" pattern="[0-9]{7,8}" oninput="this.value = this.value.replace(/\\D/g, '')" value="${obj.cedula || ''}" required>
                 <select id="r_salud"><option value="Sano">Sano</option><option value="Afeccion Leve">Afección Leve</option><option value="Enfermedad Cronica">Enfermedad Crónica</option></select>
-                <input type="text" id="r_telp" placeholder="Teléfono Personal *" value="${obj.telefono_personal || ''}" required>
-                <input type="text" id="r_tels" placeholder="Teléfono Secundario" value="${obj.telefono_secundario || ''}">
+                <input type="text" id="r_telp" placeholder="Tel. Personal (Ej: 0414...) *" minlength="11" maxlength="11" pattern="^0[0-9]{10}$" oninput="this.value = this.value.replace(/\\D/g, '')" value="${obj.telefono_personal || ''}" required>
+                <input type="text" id="r_tels" placeholder="Tel. Secundario" minlength="11" maxlength="11" pattern="^0[0-9]{10}$" oninput="this.value = this.value.replace(/\\D/g, '')" value="${obj.telefono_secundario || ''}">
                 <input type="email" id="r_corr" placeholder="Correo *" value="${obj.correo || ''}" required>
             </div>
-            <input type="text" id="r_dir" placeholder="Dirección *" value="${obj.direccion || ''}" style="margin-top:10px;" required>
+            <input type="text" id="r_dir" placeholder="Dirección *" minlength="5" maxlength="30" value="${obj.direccion || ''}">
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
                 <select id="r_disc"><option value="No">Sin Discapacidad</option><option value="Si">Con Discapacidad</option></select>
-                <input type="text" id="r_detdisc" placeholder="Detalle Discapacidad" value="${obj.detalle_discapacidad || ''}">
-                <input type="text" id="r_mot" placeholder="Motivo *" value="${obj.motivo || ''}" required>
+                <input type="text" id="r_detdisc" placeholder="Detalle Discapacidad" maxlength="60" value="${obj.detalle_discapacidad || ''}">
+                <input type="text" id="r_mot" placeholder="Motivo *" minlength="5" maxlength="100" value="${obj.motivo || ''}" required>
                 <select id="r_con"><option value="Recomendacion">Recomendación</option><option value="Redes Sociales">Redes Sociales</option></select>
                 <input type="date" id="r_fec" value="${obj.fecha || ''}" required>
-                <input type="time" id="r_hor" value="${obj.hora || ''}" required>
+                <input type="time" id="r_hor" min="06:35" max="18:35" value="${obj.hora || ''}" required>
                 <select id="r_tra">
-                    <option value="Implantología 3D">Implantología 3D ($450)</option>
-                    <option value="Diseño de Sonrisa Digital">Diseño de Sonrisa Digital ($120)</option>
-                    <option value="Ortodoncia Invisible/Fija">Ortodoncia Invisible/Fija ($800)</option>
-                    <option value="Odontología General">Odontología General ($45)</option>
-                    <option value="Aclaramiento Dental LED">Aclaramiento Dental LED ($60)</option>
-                    <option value="Profilaxis Ultrasónica">Profilaxis Ultrasónica ($25)</option>
+                    <option value="Implantología 3D" data-precio="450">Implantología 3D ($450)</option>
+                    <option value="Diseño de Sonrisa Digital" data-precio="120">Diseño de Sonrisa Digital ($120)</option>
+                    <option value="Ortodoncia Invisible/Fija" data-precio="800">Ortodoncia Invisible/Fija ($800)</option>
+                    <option value="Odontología General" data-precio="45">Odontología General ($45)</option>
+                    <option value="Aclaramiento Dental LED" data-precio="60">Aclaramiento Dental LED ($60)</option>
+                    <option value="Profilaxis Ultrasónica" data-precio="25">Profilaxis Ultrasónica ($25)</option>
                 </select>
                 <select id="r_odo">
                     <option value="Dr. Jose Miquilena">Dr. Jose Miquilena</option>
@@ -194,6 +201,18 @@ async function abrirModal(modo = 'nuevo', id = null) {
         `;
         if(obj.tratamiento) document.getElementById('r_tra').value = obj.tratamiento;
         if(obj.odontologo) document.getElementById('r_odo').value = obj.odontologo;
+
+        // Validaciones de fechas en el Modal
+        setTimeout(() => {
+            const fnac = document.getElementById('r_fnac');
+            const fec = document.getElementById('r_fec');
+            const hoy = new Date();
+            const maxDate = new Date(hoy.getFullYear() - 3, hoy.getMonth(), hoy.getDate()).toISOString().split('T')[0];
+            const minDate = new Date(hoy.getFullYear() - 100, hoy.getMonth(), hoy.getDate()).toISOString().split('T')[0];
+            const todayISO = hoy.toISOString().split('T')[0];
+            if(fnac) { fnac.setAttribute('max', maxDate); fnac.setAttribute('min', minDate); }
+            if(fec) { fec.setAttribute('min', todayISO); }
+        }, 50);
     }
     else if (tablaActiva === 'pagos') {
         container.innerHTML = `
@@ -209,7 +228,7 @@ async function abrirModal(modo = 'nuevo', id = null) {
             <input type="text" id="pg_dir" placeholder="Dirección" value="${obj.direccion || ''}" style="margin-top:10px;" readonly>
             <input type="text" id="pg_tra" placeholder="Tratamiento" value="${obj.tratamiento || ''}" style="margin-top:10px;" readonly>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
-                <input type="number" step="0.01" id="pg_usd" placeholder="Monto USD ($) *" value="${obj.monto_usd || ''}" required>
+                <input type="number" step="0.01" id="pg_usd" placeholder="Monto USD ($) *" value="${obj.monto_usd || ''}" oninput="document.getElementById('pg_bs').value = (this.value * tasaGlobalBCV).toFixed(2)" required>
                 <input type="number" step="0.01" id="pg_bs" placeholder="Monto VES (Bs)" value="${obj.monto_bs || ''}" readonly>
                 <input type="text" id="pg_ref" placeholder="Nro Referencia" value="${obj.referencia || ''}">
                 <select id="pg_met"><option value="Pago Movil">Pago Móvil</option><option value="Zelle">Zelle</option><option value="Efectivo USD">Efectivo USD</option></select>
@@ -246,7 +265,7 @@ async function abrirModal(modo = 'nuevo', id = null) {
             <input type="text" id="c_odonto" placeholder="Odontograma (Estado de piezas)" value="${obj.odontograma || ''}">
             <textarea id="c_diag" placeholder="Diagnóstico clínico" rows="2">${obj.diagnostico || ''}</textarea>
             <textarea id="c_plan" placeholder="Plan de tratamiento detallado" rows="2">${obj.plan_tratamiento || ''}</textarea>
-            <input type="text" id="c_pres" placeholder="Presupuesto y Firma de aceptación" value="${obj.presupuesto_firma || ''}">
+            <input type="text" id="c_pres" placeholder="Presupuesto" value="${obj.presupuesto_firma || ''}">
 
             <h4 style="color:var(--secondary-color); margin:15px 0 5px 0;">5. Consentimiento Legal</h4>
             <div style="display:flex; gap:15px;">
@@ -290,7 +309,7 @@ async function abrirModal(modo = 'nuevo', id = null) {
             <input type="text" id="rep_col" placeholder="Nombre y Nro Colegiado (MPPS) del Dr *" value="${obj.odontologo_colegiado || ''}" required>
             <div style="display:flex; gap:15px; margin-top:10px;">
                 <label><input type="checkbox" id="rep_cons" ${obj.consentimiento_informado ? 'checked' : ''}> Consentimiento informado aceptado</label>
-                <input type="text" id="rep_firma" placeholder="Firma Doctor / Paciente" value="${obj.firma_paciente_doctor || ''}">
+                <input type="text" id="rep_firma" placeholder="Nombre del paciente" value="${obj.firma_paciente_doctor || ''}">
             </div>
         `;
     }
@@ -373,6 +392,11 @@ async function autocompletarReporte(id) {
 async function guardarRegistro() {
     let data = {};
     if (tablaActiva === 'reservas') {
+        // LÓGICA DE EXTRACCIÓN DE PRECIO CORREGIDA (Extrae lo que está después del signo $)
+        let selectTra = document.getElementById('r_tra');
+        let txtOpcion = selectTra.options[selectTra.selectedIndex].text;
+        let precioCalculado = parseFloat(txtOpcion.match(/\$(\d+)/)?.[1] || 0);
+
         data = {
             primer_nombre: document.getElementById('r_pnom').value, segundo_nombre: document.getElementById('r_snom').value,
             primer_apellido: document.getElementById('r_papel').value, segundo_apellido: document.getElementById('r_sapel').value,
@@ -383,7 +407,7 @@ async function guardarRegistro() {
             detalle_discapacidad: document.getElementById('r_detdisc').value, motivo: document.getElementById('r_mot').value,
             conoce_por: document.getElementById('r_con').value, fecha: document.getElementById('r_fec').value,
             hora: document.getElementById('r_hor').value, tratamiento: document.getElementById('r_tra').value,
-            precio: parseFloat(document.getElementById('r_tra').value.match(/\d+/)?.[0] || 0),
+            precio: precioCalculado,
             odontologo: document.getElementById('r_odo').value
         };
     }
