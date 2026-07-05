@@ -15,7 +15,7 @@ let db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREA
     else console.log(`✅ Base de datos conectada: ${dbPath}`);
 });
 
-let TASA_BCV_ACTUAL = 55.20;
+let TASA_BCV_ACTUAL = 700.00;
 
 async function actualizarTasaBCV() {
     try {
@@ -35,50 +35,80 @@ setInterval(actualizarTasaBCV, 3600000);
 db.serialize(() => {
     // 1. Tratamientos
     db.run(`CREATE TABLE IF NOT EXISTS tratamientos (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT UNIQUE, precio_usd REAL, precio_bs REAL
+        id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT UNIQUE, precio_usd REAL, 
+        precio_bs REAL
     )`);
     
     // 2. Personal Médico Registrado (Precargado con tu equipo)
     db.run(`CREATE TABLE IF NOT EXISTS personal_medico_registrado (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, nombres TEXT, apellidos TEXT, cedula TEXT UNIQUE, 
-        telefono TEXT, cargo TEXT, horario TEXT, usuario TEXT UNIQUE, password TEXT
+        id INTEGER PRIMARY KEY AUTOINCREMENT, nombres TEXT, apellidos TEXT, 
+        cedula TEXT UNIQUE, telefono TEXT, cargo TEXT, horario TEXT, 
+        usuario TEXT UNIQUE, password TEXT
     )`);
     
     // 3. Reservas (Sin columna 'estado')
     db.run(`CREATE TABLE IF NOT EXISTS reservas (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, primer_nombre TEXT, segundo_nombre TEXT, primer_apellido TEXT, 
-        segundo_apellido TEXT, fecha_nacimiento TEXT, cedula TEXT, estatus_salud TEXT, telefono_personal TEXT, 
-        telefono_secundario TEXT, correo TEXT, direccion TEXT, discapacidad TEXT, detalle_discapacidad TEXT, 
-        motivo TEXT, conoce_por TEXT, fecha TEXT, hora TEXT, tratamiento TEXT, precio REAL, odontologo TEXT
+        id INTEGER PRIMARY KEY AUTOINCREMENT, 
+        primer_nombre TEXT, 
+        segundo_nombre TEXT, 
+        primer_apellido TEXT, 
+        segundo_apellido TEXT, 
+        fecha_nacimiento TEXT, 
+        cedula TEXT, 
+        estatus_salud TEXT, 
+        telefono_personal TEXT, 
+        telefono_secundario TEXT, 
+        correo TEXT, direccion TEXT, 
+        discapacidad TEXT, 
+        detalle_discapacidad TEXT, 
+        motivo TEXT, 
+        conoce_por TEXT, 
+        fecha TEXT, 
+        hora TEXT, tratamiento TEXT, precio REAL, odontologo TEXT
     )`);
 
     // 4. Pagos (Con estado de aprobación para el color verde)
     db.run(`CREATE TABLE IF NOT EXISTS pagos (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, reserva_id INTEGER, primer_nombre TEXT, primer_apellido TEXT, 
-        cedula TEXT, telefono TEXT, direccion TEXT, fecha_reserva TEXT, hora_reserva TEXT, tratamiento TEXT, 
-        monto_usd REAL, monto_bs REAL, referencia TEXT, metodo_pago TEXT, fecha_pago TEXT, tasa_dolar REAL,
+        id INTEGER PRIMARY KEY AUTOINCREMENT, reserva_id INTEGER, 
+        primer_nombre TEXT, primer_apellido TEXT, 
+        cedula TEXT, telefono TEXT, direccion TEXT, fecha_reserva TEXT, 
+        hora_reserva TEXT, tratamiento TEXT, 
+        monto_usd REAL, monto_bs REAL, referencia TEXT, 
+        metodo_pago TEXT, fecha_pago TEXT, tasa_dolar REAL,
         estado_pago TEXT DEFAULT 'Pendiente',
         FOREIGN KEY(reserva_id) REFERENCES reservas(id)
     )`);
 
     // 5. Consultas (Estructura de 5 módulos)
     db.run(`CREATE TABLE IF NOT EXISTS consultas (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, reserva_id INTEGER, nombre_completo TEXT, fecha_nacimiento_edad TEXT, 
-        cedula TEXT, direccion_telefono TEXT, correo TEXT, contacto_emergencia TEXT, enfermedades_sistemicas TEXT, 
-        alergias TEXT, medicamentos_actuales TEXT, condiciones_especiales TEXT, enfermedades_infectocontagiosas TEXT, 
-        motivo_consulta TEXT, antecedentes_dentales TEXT, habitos TEXT, odontograma TEXT, diagnostico TEXT, 
-        plan_tratamiento TEXT, presupuesto_firma TEXT, autorizacion_tratamiento TEXT, proteccion_datos TEXT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT, reserva_id INTEGER, 
+        nombre_completo TEXT, 
+        fecha_nacimiento_edad TEXT, 
+        cedula TEXT, direccion_telefono TEXT, correo TEXT, 
+        contacto_emergencia TEXT, 
+        enfermedades_sistemicas TEXT, 
+        alergias TEXT, medicamentos_actuales TEXT, condiciones_especiales TEXT, 
+        enfermedades_infectocontagiosas TEXT, 
+        motivo_consulta TEXT, antecedentes_dentales TEXT, habitos TEXT, 
+        odontograma TEXT, diagnostico TEXT, 
+        plan_tratamiento TEXT, presupuesto_firma TEXT, autorizacion_tratamiento TEXT, 
+        proteccion_datos TEXT,
         fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY(reserva_id) REFERENCES reservas(id)
     )`);
 
     // 6. Reportes / Indicaciones (Estructura de 4 módulos)
     db.run(`CREATE TABLE IF NOT EXISTS reportes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, reserva_id INTEGER, nombres_apellidos TEXT, cedula TEXT, 
-        telefono_whatsapp TEXT, correo TEXT, fecha_nacimiento_edad TEXT, fecha_hora_consulta TEXT, 
-        motivo_consulta TEXT, diagnostico_principal TEXT, piezas_afectadas TEXT, procedimiento_realizado TEXT, 
-        materiales_utilizados TEXT, observaciones TEXT, indicaciones_generales TEXT, indicaciones_especificas TEXT, 
-        prescripcion_medica TEXT, signos_alarma TEXT, fecha_proxima_cita TEXT, odontologo_colegiado TEXT, 
+        id INTEGER PRIMARY KEY AUTOINCREMENT, reserva_id INTEGER, 
+        nombres_apellidos TEXT, cedula TEXT, 
+        telefono_whatsapp TEXT, correo TEXT, fecha_nacimiento_edad TEXT, 
+        fecha_hora_consulta TEXT, 
+        motivo_consulta TEXT, diagnostico_principal TEXT, piezas_afectadas TEXT, 
+        procedimiento_realizado TEXT, 
+        materiales_utilizados TEXT, observaciones TEXT, indicaciones_generales TEXT, 
+        indicaciones_especificas TEXT, 
+        prescripcion_medica TEXT, signos_alarma TEXT, fecha_proxima_cita TEXT, 
+        odontologo_colegiado TEXT, 
         consentimiento_informado TEXT, firma_paciente_doctor TEXT,
         FOREIGN KEY(reserva_id) REFERENCES reservas(id)
     )`);
@@ -87,12 +117,15 @@ db.serialize(() => {
     // Historial Médico: Vista de solo lectura que une de forma intocable los datos
     db.run("DROP VIEW IF EXISTS historial_medico");
     db.run(`CREATE VIEW historial_medico AS 
-            SELECT r.id AS reserva_id, r.cedula AS cedula_paciente, r.primer_nombre || ' ' || r.primer_apellido AS paciente,
-                   r.fecha AS fecha_atencion, r.tratamiento, r.odontologo, 
-                   COALESCE(c.diagnostico, 'Sin diagnóstico registrado') AS diagnostico_clinico,
-                   COALESCE(rep.procedimiento_realizado, 'Sin procedimiento') AS procedimiento_aplicado,
-                   COALESCE(rep.prescripcion_medica, 'Sin medicamentos') AS recipe_medico,
-                   COALESCE(rep.fecha_proxima_cita, 'No requiere') AS proxima_cita
+            SELECT r.id AS reserva_id, r.cedula AS cedula_paciente, 
+            r.primer_nombre || ' ' || r.primer_apellido AS paciente,
+            r.fecha AS fecha_atencion, r.tratamiento, r.odontologo, 
+            COALESCE(c.diagnostico, 'Sin diagnóstico registrado') 
+            AS diagnostico_clinico,
+            COALESCE(rep.procedimiento_realizado, 'Sin procedimiento') 
+            AS procedimiento_aplicado,
+            COALESCE(rep.prescripcion_medica, 'Sin medicamentos') AS recipe_medico,
+            COALESCE(rep.fecha_proxima_cita, 'No requiere') AS proxima_cita
             FROM reservas r 
             LEFT JOIN consultas c ON r.id = c.reserva_id 
             LEFT JOIN reportes rep ON r.id = rep.reserva_id 
@@ -100,21 +133,26 @@ db.serialize(() => {
 
     db.run("DROP VIEW IF EXISTS vista_citas_pendientes");
     db.run(`CREATE VIEW vista_citas_pendientes AS 
-            SELECT id, primer_nombre || ' ' || primer_apellido AS paciente, telefono_personal, fecha, hora, tratamiento, odontologo 
-            FROM reservas WHERE id NOT IN (SELECT reserva_id FROM pagos WHERE estado_pago = 'Aprobado') ORDER BY fecha ASC`);
+            SELECT id, primer_nombre || ' ' || primer_apellido AS paciente, 
+            telefono_personal, fecha, hora, tratamiento, odontologo 
+            FROM reservas WHERE id NOT IN (SELECT reserva_id FROM pagos WHERE 
+            estado_pago = 'Aprobado') ORDER BY fecha ASC`);
 
     db.run("DROP VIEW IF EXISTS vista_ingresos_recientes");
     db.run(`CREATE VIEW vista_ingresos_recientes AS 
-            SELECT id, primer_nombre || ' ' || primer_apellido AS paciente, monto_usd, metodo_pago, fecha_pago, estado_pago 
+            SELECT id, primer_nombre || ' ' || primer_apellido AS paciente, 
+            monto_usd, metodo_pago, fecha_pago, estado_pago 
             FROM pagos ORDER BY fecha_pago DESC`);
 
     db.run("DROP VIEW IF EXISTS vista_productividad_odontologos");
     db.run(`CREATE VIEW vista_productividad_odontologos AS 
-            SELECT odontologo, COUNT(*) as volumen_tratamientos, SUM(precio) as rentabilidad_usd, SUM(precio * 55.20) as rentabilidad_bs 
+            SELECT odontologo, COUNT(*) as volumen_tratamientos, SUM(precio) 
+            as rentabilidad_usd, SUM(precio * 700.00) as rentabilidad_bs 
             FROM reservas GROUP BY odontologo`);
 
     // Inserciones por defecto: Tratamientos
-    const stmtTrat = db.prepare("INSERT OR IGNORE INTO tratamientos (nombre, precio_usd, precio_bs) VALUES (?, ?, ?)");
+    const stmtTrat = db.prepare
+    ("INSERT OR IGNORE INTO tratamientos (nombre, precio_usd, precio_bs) VALUES (?, ?, ?)");
     stmtTrat.run("Implantología 3D", 450.00, 450.00 * TASA_BCV_ACTUAL);
     stmtTrat.run("Diseño de Sonrisa Digital", 120.00, 120.00 * TASA_BCV_ACTUAL);
     stmtTrat.run("Ortodoncia Invisible/Fija", 800.00, 800.00 * TASA_BCV_ACTUAL);
@@ -128,8 +166,6 @@ db.serialize(() => {
     stmtPers.run("Jose", "Miquilena", "18000111", "04120001111", "Director Médico", "Mañana", "jmiquilena111", "123456");
     stmtPers.run("Kevin", "Da Costa", "19000222", "04140002222", "Ortodoncista", "Mañana", "kdacosta222", "123456");
     stmtPers.run("Nilson", "Guanipa", "17000333", "04240003333", "Cirujano Maxilofacial", "Tarde", "nguanipa333", "123456");
-    stmtPers.run("Jose", "Ordonez", "30000444", "04246548189", "Ayudante / Higienista", "Mañana", "jordonez444", "123456");
-    stmtPers.run("Anthony", "Arnaez", "31000555", "04120005555", "Ayudante / Higienista", "Tarde", "aarnaez555", "123456");
     stmtPers.finalize();
 });
 
